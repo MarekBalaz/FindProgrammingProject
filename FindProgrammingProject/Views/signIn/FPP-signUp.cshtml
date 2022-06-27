@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="FPP.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1> Sign up</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col" id="signup">
+                <h4> Email</h4>
+                <input type="text">
+                <h4> Username</h4>
+                <input type="text">
+                <h4> Password</h4>
+                <input type="password" id="password">
+                <input type="checkbox" onclick="myFunction()"> Show Password
+                <br>
+                <br>
+                <button> Sign up</button>
+                <br>
+                <a href="FPP-Signin.cshtml"> Already a member? Sign in!</a>
+            </div>
+            <div class="col" id="exsignup">
+                <div id="signinbtn">
+                <button class="btn btn-dark"> Sign up with Github</button>
+                <br>
+                <button class="btn btn-success"> Sign up with Google</button>
+                <br>
+                <button class="btn btn-primary"> Sign up with twitter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function myFunction() {
+  var x = document.getElementById("password");
+  if (x.type === "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+}
+    </script>
+</body>
+</html>
