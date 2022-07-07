@@ -1,10 +1,16 @@
 ﻿using FindProgrammingProject.FunctionalClasses.SigningLogic;
 using FindProgrammingProject.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace FindProgrammingProject.FunctionalClasses
 {
-    
+    public enum ExternalLoginResponse
+    {
+        Success,
+        DataDidNotCome,
+        AccountLockedOut
+    }
     public enum SignInResult
     {
         Success,
@@ -18,7 +24,8 @@ namespace FindProgrammingProject.FunctionalClasses
         Success,
         PasswordsDoNotMatch,
         EmailIsAlreadyRegistered,
-        EmailIncorrect
+        EmailIncorrect,
+        Error
     }
 
     public interface ISignClass
@@ -26,7 +33,7 @@ namespace FindProgrammingProject.FunctionalClasses
         Task<SignInResult> SignIn(string Email, string Password);
         Task<SignInResult> SignOut();
         Task<SignUpResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation);
-        Task<int> ThirdPartySignIn();
+        Task<ExternalLoginResponse> ThirdPartySignIn(ExternalLoginInfo result);
     }
 
     public class SignClass : ISignClass
@@ -97,9 +104,47 @@ namespace FindProgrammingProject.FunctionalClasses
             }
 
         }
-        public async Task<int> ThirdPartySignIn()
+        public async Task<ExternalLoginResponse> ThirdPartySignIn(ExternalLoginInfo result)
         {
-            return 1;
+            if (result == null)
+            {
+                return ExternalLoginResponse.DataDidNotCome;
+            }
+            var loginResult = await signInManager.ExternalLoginSignInAsync(result.LoginProvider,result.ProviderKey,true,true);
+            if(loginResult.Succeeded)
+            {
+                return ExternalLoginResponse.Success;
+            }
+            else if(loginResult.IsLockedOut)
+            {
+                return ExternalLoginResponse.AccountLockedOut;
+            }
+            else
+            {
+                var email = result.Principal.Claims.First(x => x.Type == ClaimTypes.Email).Value;
+                var user = await userManager.FindByEmailAsync(email);
+                if(user == null)
+                {
+                    //create new user and add him external login and sign him in
+                    var newUser = new User { Email = email };
+                    await userManager.CreateAsync(newUser);
+                    await userManager.AddLoginAsync(newUser, result);
+                    newUser.EmailConfirmed = true;
+                    await userManager.UpdateAsync(newUser);
+                    await signInManager.SignInAsync(newUser, true);
+                }
+                else
+                {
+                    //add user external login and sign him in
+                    await userManager.AddLoginAsync(user, result);
+                    user.EmailConfirmed = true;
+                    await userManager.UpdateAsync(user);
+                    await signInManager.SignInAsync(user,true);
+                    
+                }
+            }
+
+            return ExternalLoginResponse.Success;
         }
     }
 
