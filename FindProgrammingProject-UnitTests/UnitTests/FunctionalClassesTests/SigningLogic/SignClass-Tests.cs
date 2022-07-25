@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace FindProgrammingProject_UnitTests.FunctionalClassesTests.SigningLogic
 {
-    internal class SignClass_Tests
+    public class SignClass_Tests
     {
+
     }
 }

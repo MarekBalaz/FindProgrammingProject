@@ -1,12 +1,9 @@
-<<<<<<< HEAD
-﻿using FindProgrammingProject.FunctionalClasses.SigningLogic;
-=======
-﻿using FindProgrammingProject.FunctionalClasses;
+
 using FindProgrammingProject.FunctionalClasses.SigningLogic;
+﻿using FindProgrammingProject.FunctionalClasses;
 using FindProgrammingProject.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
->>>>>>> 43d50c8f43db04dfc2f96b8a254aaee84f8a1290
 using Microsoft.AspNetCore.Mvc;
 
 namespace FindProgrammingProject.Controllers
@@ -14,20 +11,17 @@ namespace FindProgrammingProject.Controllers
     public class SigningController : Controller
     {
         private ISignClass signClass;
-        private IVerification verification;
-        private ICodeGenerator codeGenerator;
+        private IVerification? verification;
+        private ICodeGenerator? codeGenerator;
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
-        private IReset reset;
-        public SigningController(ISignClass signClass, IVerification verification,
-            ICodeGenerator codeGenerator, UserManager<User> userManager, IReset reset,
+        private IReset? reset;
+        private ISender? sender;
+        public SigningController(ISignClass signClass, UserManager<User> userManager,
             SignInManager<User> signInManager) 
         {
             this.signClass = signClass;
-            this.verification = verification;
-            this.codeGenerator = codeGenerator;
             this.userManager = userManager;
-            this.reset = reset;
             this.signInManager = signInManager;
         }
         //This action will either sign in person or return sign in view
@@ -79,6 +73,8 @@ namespace FindProgrammingProject.Controllers
         }
         public async Task<IActionResult> SendResetPasswordCode(string Email)
         {
+            sender = new MailSender();
+            codeGenerator = new PasswordResetCodeGenerator(userManager, sender);
             var user = await userManager.FindByEmailAsync(Email);
             if(user != null)
             {
@@ -96,6 +92,7 @@ namespace FindProgrammingProject.Controllers
         }
         public async Task<IActionResult> VerifyResetPasswordToken(string email, string token)
         {
+            verification = new PasswordResetTokenVerifiction(userManager);
             VerificationResult result = await verification.Verify(email, token);
             if(result == VerificationResult.Success)
             {                   
@@ -106,6 +103,7 @@ namespace FindProgrammingProject.Controllers
         }
         public async Task<IActionResult> SetNewPassword(string newPassword, string newPasswordRepeated,string token, string email)
         {
+            reset = new ResetPassword(userManager,new PasswordResetTokenVerifiction(userManager));
             var result = await reset.Reset(newPassword,newPasswordRepeated,token,email);
             if(result == ResetResponse.Success)
             {
@@ -117,6 +115,8 @@ namespace FindProgrammingProject.Controllers
         }
         public async Task<IActionResult> SendEmailVerificationCode(string Email)
         {
+            sender = new MailSender();
+            codeGenerator = new EmailVerificationCodeGenerator(userManager,sender);
             var user = await userManager.FindByEmailAsync(Email);
             if(user != null)
             {
@@ -134,6 +134,7 @@ namespace FindProgrammingProject.Controllers
         }
         public async Task<IActionResult> VerifyEmail(string Email, string Token)
         {
+            verification = new EmailTokenVerification(userManager,signInManager);
             VerificationResult result = await verification.Verify(Email, Token);
             if(result == VerificationResult.Success)
             {

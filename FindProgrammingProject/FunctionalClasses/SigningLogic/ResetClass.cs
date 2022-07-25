@@ -12,9 +12,9 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
     }
     public class ResetPassword : IReset
     {
-        private IVerification verification;
+        private PasswordResetTokenVerifiction verification;
         private UserManager<User> userManager;
-        public ResetPassword(UserManager<User> userManager, IVerification verification)
+        public ResetPassword(UserManager<User> userManager, PasswordResetTokenVerifiction verification)
         {
             this.userManager = userManager;
             this.verification = verification;

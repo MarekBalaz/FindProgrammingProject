@@ -1,4 +1,5 @@
 using Elasticsearch.Net;
+using FindProgrammingProject.FunctionalClasses.SigningLogic;
 using FindProgrammingProject.Models;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -17,7 +18,6 @@ Serilog.Log.Logger = new LoggerConfiguration().MinimumLevel.Warning().WriteTo.El
 // Add services to the container. 
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
-builder.Logging.AddSerilog();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(x =>
 {
     x.LoginPath = "Signing/SignIn";
@@ -48,6 +48,7 @@ builder.Services.AddIdentity<User, IdentityRole>(x =>
      x.User.RequireUniqueEmail = true;
 
  }).AddEntityFrameworkStores<UserContext>();
+builder.Services.AddSingleton<ICreation>(x => new Creation((UserManager<User>)x.GetService(typeof(UserManager<User>))));
 builder.Services.Configure<DataProtectionTokenProviderOptions>(x =>
 {
     x.TokenLifespan = TimeSpan.FromMinutes(5);

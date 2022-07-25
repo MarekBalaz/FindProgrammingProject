@@ -8,13 +8,11 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
     {
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
-        private SignClass signClass;
 
-        public EmailTokenVerification(UserManager<User> userManager, SignInManager<User> signInManager, SignClass signClass)
+        public EmailTokenVerification(UserManager<User> userManager, SignInManager<User> signInManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.signClass = signClass;
         }
 
         public async Task<VerificationResult> Verify(string Email, string Token)
@@ -43,14 +41,10 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
     public class PasswordResetTokenVerifiction : IVerification
     {
         private UserManager<User> userManager;
-        private SignInManager<User> signInManager;
-        private SignClass signClass;
 
-        public PasswordResetTokenVerifiction(UserManager<User> userManager, SignInManager<User> signInManager, SignClass signClass)
+        public PasswordResetTokenVerifiction(UserManager<User> userManager)
         {
             this.userManager = userManager;
-            this.signInManager = signInManager;
-            this.signClass = signClass;
         }
         public async Task<VerificationResult> Verify(string Email, string Token)
         {

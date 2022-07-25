@@ -4,16 +4,13 @@ using System.Security.Claims;
 
 namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 {
-<<<<<<< HEAD
 
-=======
     public enum ExternalLoginResponse
     {
         Success,
         DataDidNotCome,
         AccountLockedOut
     }
->>>>>>> 43d50c8f43db04dfc2f96b8a254aaee84f8a1290
     public enum SignInResult
     {
         Success,
@@ -45,11 +42,11 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         private SignInManager<User> signInManager;
         private ICodeGenerator codeGenerator;
         private ICreation creation;
-        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, ICodeGenerator _codeGenerator, ICreation _creation)
+        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, ICreation _creation)
         {
             userManager = _userManager;
             signInManager = _signInManager;
-            codeGenerator = _codeGenerator;
+            codeGenerator = new EmailVerificationCodeGenerator(_userManager,new MailSender());
             creation = _creation;
         }
         public async Task<SignInResult> SignIn(string Email, string Password)
