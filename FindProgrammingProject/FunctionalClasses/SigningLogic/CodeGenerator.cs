@@ -1,11 +1,10 @@
-﻿using FindProgrammingProject.FunctionalClasses.SigningLogic;
-using FindProgrammingProject.Models;
+﻿using FindProgrammingProject.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Net;
 using System.Net.Mail;
 using System.Web;
 
-namespace FindProgrammingProject.FunctionalClasses
+namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 {
     public class PaswordResetCodeGenerator : ICodeGenerator
     {
@@ -28,7 +27,7 @@ namespace FindProgrammingProject.FunctionalClasses
             var encodedEmail = HttpUtility.UrlEncode(user.Email);
 
             var appSettings = System.Configuration.ConfigurationManager.AppSettings;
-            MailMessage mailMessage = new MailMessage(appSettings["ApplicationInfo:EmailInfo:Email"], encodedEmail);
+            MailMessage mailMessage = new MailMessage(new MailAddress("marekgamingacc@gmail.com"), new MailAddress(HttpUtility.HtmlDecode(encodedEmail)));
             mailMessage.Subject = "Email Verification";
             //here we will add code into html code
             mailMessage.Body = "";
@@ -37,7 +36,7 @@ namespace FindProgrammingProject.FunctionalClasses
             smtpClient.Host = "smtp.gmail.com";
             smtpClient.Port = 587;
             smtpClient.EnableSsl = true;
-            NetworkCredential nc = new NetworkCredential(appSettings["ApplicationInfo:EmailInfo:Email"],appSettings["ApplicationInfo:EmailInfo:EmailPassword"]);
+            NetworkCredential nc = new NetworkCredential(appSettings["ApplicationInfo:EmailInfo:Email"], appSettings["ApplicationInfo:EmailInfo:EmailPassword"]);
             smtpClient.UseDefaultCredentials = true;
             smtpClient.Credentials = nc;
             try
@@ -55,6 +54,6 @@ namespace FindProgrammingProject.FunctionalClasses
     {
         public Task<SignUpResult> GenerateCode(User user);
     }
-    
+
 
 }

@@ -1,5 +1,6 @@
 using Elasticsearch.Net;
 using FindProgrammingProject.Models;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var configuration = System.Configuration.ConfigurationManager.AppSettings; 
 builder.Services.AddControllersWithViews();
-var app = builder.Build();
 builder.Services.AddLogging();
 builder.Logging.AddSerilog();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(x =>
@@ -25,19 +25,20 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     x.LogoutPath = "Signing/SignOut";
     x.Cookie.Name = "AuthenticationCookie_FindProgrammingProject";
     x.Cookie.Expiration = TimeSpan.FromMinutes(1);
-}).AddGoogle(x =>
-{
-    x.ClientId = "";
-    x.ClientSecret = "";
-}).AddTwitter(x =>
-{
-    x.ConsumerKey = "";
-    x.ConsumerSecret = "";
-}).AddGitHub(x =>
-{
-    x.ClientId = "";
-    x.ClientSecret = "";
-});
+})//.AddGoogle(x =>
+//{
+//    x.ClientId = "";
+//    x.ClientSecret = "";
+//}).AddTwitter(x =>
+//{
+//    x.ConsumerKey = "";
+//    x.ConsumerSecret = "";
+//}).AddGitHub(x =>
+//{
+//    x.ClientId = "";
+//    x.ClientSecret = "";
+//})
+;
 builder.Services.AddDbContext<UserContext>(x =>
 {
     x.UseSqlServer(configuration["MSSQLConnectionString"]);
@@ -52,6 +53,7 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(x =>
 {
     x.TokenLifespan = TimeSpan.FromMinutes(5);
 });
+var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -67,6 +69,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Signing}/{action=SignIn}");
 
 app.Run();
+public partial class Program{ };

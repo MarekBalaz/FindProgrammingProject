@@ -1,10 +1,9 @@
-﻿using FindProgrammingProject.FunctionalClasses.SigningLogic;
-using FindProgrammingProject.Models;
+﻿using FindProgrammingProject.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace FindProgrammingProject.FunctionalClasses
+namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 {
-    
+
     public enum SignInResult
     {
         Success,

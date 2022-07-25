@@ -1,5 +1,4 @@
-﻿using FindProgrammingProject.FunctionalClasses;
-using FindProgrammingProject.FunctionalClasses.SigningLogic;
+﻿using FindProgrammingProject.FunctionalClasses.SigningLogic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FindProgrammingProject.Controllers
@@ -28,8 +27,8 @@ namespace FindProgrammingProject.Controllers
             }
             else
             {
-                FunctionalClasses.SignInResult result = await signClass.SignIn(Email,Password);
-                if (result == FunctionalClasses.SignInResult.Success)
+                FunctionalClasses.SigningLogic.SignInResult result = await signClass.SignIn(Email,Password);
+                if (result == FunctionalClasses.SigningLogic.SignInResult.Success)
                 {
                     return View(ReturnUrl);
                 }
