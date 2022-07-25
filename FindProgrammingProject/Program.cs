@@ -12,10 +12,9 @@ using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-//Serilog.Log.Logger = new LoggerConfiguration().WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(""))).MinimumLevel.Warning().CreateLogger();
-// Add services to the container.
-var configuration = System.Configuration.ConfigurationManager.AppSettings; 
+var configuration = System.Configuration.ConfigurationManager.AppSettings;
+Serilog.Log.Logger = new LoggerConfiguration().MinimumLevel.Warning().WriteTo.Elasticsearch(new ElasticsearchSinkOptions()).CreateLogger();
+// Add services to the container. 
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 builder.Logging.AddSerilog();

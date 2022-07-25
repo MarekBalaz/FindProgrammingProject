@@ -4508,19 +4508,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\marek\\.nuget\\packages\\": {}
+    "C:\\Users\\marek_000\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\FindProgrammingProject.csproj",
+      "projectUniqueName": "C:\\Users\\marek_000\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\FindProgrammingProject.csproj",
       "projectName": "FindProgrammingProject",
-      "projectPath": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\FindProgrammingProject.csproj",
-      "packagesPath": "C:\\Users\\marek\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\obj\\",
+      "projectPath": "C:\\Users\\marek_000\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\FindProgrammingProject.csproj",
+      "packagesPath": "C:\\Users\\marek_000\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\marek_000\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\marek\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\marek_000\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -4619,7 +4619,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.202\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.102\\RuntimeIdentifierGraph.json"
       }
     }
   }

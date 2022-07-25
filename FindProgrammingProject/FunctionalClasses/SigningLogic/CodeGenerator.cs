@@ -8,21 +8,36 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 {
     public class PaswordResetCodeGenerator : ICodeGenerator
     {
-        public Task<SignUpResult> GenerateCode(User user)
+        private UserManager<User> userManager;
+        private ISender sender;
+        public PaswordResetCodeGenerator(UserManager<User> userManager, ISender sender)
         {
-            throw new NotImplementedException();
+            this.userManager = userManager;
+            this.sender = sender;
+        }
+        public async Task<SignUpResult> GenerateCode(User user)
+        {
+            var encodedToken = HttpUtility.UrlEncode(await userManager.GeneratePasswordResetTokenAsync(user));
+            var encodedEmail = HttpUtility.UrlEncode(user.Email);
+
+            SignUpResult result = await sender.SendCode(encodedEmail,encodedToken);
+            return result;
+
         }
     }
     public class EmailVerificationCodeGenerator : ICodeGenerator
     {
         private UserManager<User> userManager;
+        private ISender sender;
 
-        public EmailVerificationCodeGenerator(UserManager<User> userManager)
+        public EmailVerificationCodeGenerator(UserManager<User> userManager, ISender sender)
         {
             this.userManager = userManager;
+            this.sender = sender;
         }
         public async Task<SignUpResult> GenerateCode(User user)
         {
+<<<<<<< HEAD
             var EncodeToken = HttpUtility.UrlEncode(await userManager.GenerateEmailConfirmationTokenAsync(user));
             var encodedEmail = HttpUtility.UrlEncode(user.Email);
 
@@ -39,15 +54,21 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             NetworkCredential nc = new NetworkCredential(appSettings["ApplicationInfo:EmailInfo:Email"], appSettings["ApplicationInfo:EmailInfo:EmailPassword"]);
             smtpClient.UseDefaultCredentials = true;
             smtpClient.Credentials = nc;
+=======
+>>>>>>> 43d50c8f43db04dfc2f96b8a254aaee84f8a1290
             try
             {
-                smtpClient.Send(mailMessage);
+                var EncodedToken = HttpUtility.UrlEncode(await userManager.GenerateEmailConfirmationTokenAsync(user));
+                var EncodedEmail = HttpUtility.UrlEncode(user.Email);
+
+                SignUpResult result = await sender.SendCode(EncodedEmail, EncodedToken);
+                return result;
+
             }
-            catch (Exception ex)
+            catch(Exception e)
             {
-                return SignUpResult.EmailIncorrect;
+                return SignUpResult.Error;
             }
-            return SignUpResult.Success;
         }
     }
     public interface ICodeGenerator
