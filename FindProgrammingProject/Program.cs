@@ -16,7 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = System.Configuration.ConfigurationManager.AppSettings;
 Serilog.Log.Logger = new LoggerConfiguration().MinimumLevel.Warning().WriteTo.Elasticsearch(new ElasticsearchSinkOptions()).CreateLogger();
 // Add services to the container. 
-builder.Services.AddControllersWithViews();
+//builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 builder.Services.AddLogging();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(x =>
 {
@@ -63,13 +64,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Signing}/{action=SignIn}");
+app.MapControllers();
 
 app.Run();
 public partial class Program{ };

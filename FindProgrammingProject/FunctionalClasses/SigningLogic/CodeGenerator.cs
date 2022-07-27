@@ -15,12 +15,12 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             this.userManager = userManager;
             this.sender = sender;
         }
-        public async Task<SignUpResult> GenerateCode(User user)
+        public async Task<SigningResult> GenerateCode(User user)
         {
             var encodedToken = HttpUtility.UrlEncode(await userManager.GeneratePasswordResetTokenAsync(user));
             var encodedEmail = HttpUtility.UrlEncode(user.Email);
 
-            SignUpResult result = await sender.SendCode(encodedEmail,encodedToken);
+            SigningResult result = await sender.SendCode(encodedEmail,encodedToken);
             return result;
 
         }
@@ -35,26 +35,26 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             this.userManager = userManager;
             this.sender = sender;
         }
-        public async Task<SignUpResult> GenerateCode(User user)
+        public async Task<SigningResult> GenerateCode(User user)
         {
             try
             {
                 var EncodedToken = HttpUtility.UrlEncode(await userManager.GenerateEmailConfirmationTokenAsync(user));
                 var EncodedEmail = HttpUtility.UrlEncode(user.Email);
 
-                SignUpResult result = await sender.SendCode(EncodedEmail, EncodedToken);
+                SigningResult result = await sender.SendCode(EncodedEmail, EncodedToken);
                 return result;
 
             }
             catch(Exception e)
             {
-                return SignUpResult.Error;
+                return SigningResult.Error;
             }
         }
     }
     public interface ICodeGenerator
     {
-        public Task<SignUpResult> GenerateCode(User user);
+        public Task<SigningResult> GenerateCode(User user);
     }
 
 

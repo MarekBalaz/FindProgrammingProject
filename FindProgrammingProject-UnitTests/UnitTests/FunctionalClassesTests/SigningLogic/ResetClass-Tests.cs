@@ -19,16 +19,18 @@ namespace FindProgrammingProject_UnitTests.FunctionalClassesTests.SigningLogic
         public async Task ResetPasswordTest(string email, string token,string password, string newPassword)
         {
             //arrange
-            var result = ResetResponse.Success;
+            var result = SigningResult.Success;
             //act
-            var passwordVerificationMock = new Mock<PasswordResetTokenVerifiction>();
-            passwordVerificationMock.Setup(x => x.Verify(HttpUtility.UrlEncode(email), HttpUtility.UrlDecode(token))).Returns(Task.FromResult(VerificationResult.Success));
-            //var userStoreMock = new Mock<IUserStore<User>>();
-            var userManagerMock = new Mock<UserManager<User>>();
-            userManagerMock.Setup(x => x.FindByEmailAsync(email)).Returns(Task.FromResult(new User {Email=email }));
-            userManagerMock.Setup(x => x.ResetPasswordAsync(new User { Email = email }, token, newPassword)).Returns(Task.FromResult(IdentityResult.Success));
+            
+            var store = new Mock<IUserStore<User>>();
+            var userManagerMock = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            User user = new User {Email = email};
+            userManagerMock.Setup(x => x.FindByEmailAsync(email)).Returns(Task.FromResult(user));
+            userManagerMock.Setup(x => x.ResetPasswordAsync(user, token, newPassword)).Returns(Task.FromResult(IdentityResult.Success));
+            var passwordVerificationMock = new Mock<PasswordResetTokenVerifiction>(userManagerMock.Object);
+            passwordVerificationMock.Setup(x => x.Verify(HttpUtility.UrlEncode(email), HttpUtility.UrlDecode(token))).Returns(Task.FromResult(SigningResult.Success));
             IReset reset = new ResetPassword(userManagerMock.Object,passwordVerificationMock.Object);
-            var actual = await reset.Reset(email,token, password, newPassword);
+            var actual = await reset.Reset(newPassword, password, token, email);
             //assert
             Assert.Equal(result,actual);
         }

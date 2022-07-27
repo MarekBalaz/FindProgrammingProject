@@ -15,7 +15,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             this.signInManager = signInManager;
         }
 
-        public async Task<VerificationResult> Verify(string Email, string Token)
+        public async Task<SigningResult> Verify(string Email, string Token)
         {
             var decodedEmail = HttpUtility.UrlDecode(Email);
             var decodedToken = HttpUtility.UrlDecode(Token);
@@ -28,12 +28,12 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 await userManager.ConfirmEmailAsync(user,Token);
                 await userManager.UpdateAsync(user);
                 await signInManager.SignInAsync(user,true);
-                return VerificationResult.Success;
+                return SigningResult.Success;
             }
             else
             {
                 await userManager.DeleteAsync(user);
-                return VerificationResult.Failure;
+                return SigningResult.IncorrectToken;
             }
 
         }
@@ -46,7 +46,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         {
             this.userManager = userManager;
         }
-        public async Task<VerificationResult> Verify(string Email, string Token)
+        public virtual async Task<SigningResult> Verify(string Email, string Token)
         {
             var decodedEmail = HttpUtility.UrlDecode(Email);
             var decodedToken = HttpUtility.UrlDecode(Token);
@@ -57,21 +57,16 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             
             if(response == true)
             {
-                return VerificationResult.Success;
+                return SigningResult.Success;
             }
-            return VerificationResult.Failure;
+            return SigningResult.IncorrectToken;
 
         }
     }
 
     public interface IVerification
     {
-        public Task<VerificationResult> Verify(string Email, string Token);
-    }
-    public enum VerificationResult
-    {
-        Success,
-        Failure
+        public Task<SigningResult> Verify(string Email, string Token);
     }
     
 }

@@ -10,25 +10,25 @@ namespace FindProgrammingProject_UnitTests.UnitTests.FunctionalClassesTests.Sign
 {
     public class SenderTests
     {
-
+        [Fact]
         public async Task MailSenderTest()
         {
             //arrange
-            var result = SignUpResult.Success;
+            var result = SigningResult.Success;
             //act
             ISender sender = new MailSender();
             var actual = await sender.SendCode("EncodedEmail","EncodedToken");
             //assert
             Assert.Equal(result, actual);
         }
-        public async Task SmsSenderTest()
-        {
-            var result = SignUpResult.Success;
-            //act
-            ISender sender = new SmsSender();
-            var actual = await sender.SendCode("EncodedPhoneNumber", "EncodedToken");
-            //assert
-            Assert.Equal(result, actual);
-        }
+        //public async Task SmsSenderTest()
+        //{
+        //    var result = SigningResult.Success;
+        //    //act
+        //    ISender sender = new SmsSender();
+        //    var actual = await sender.SendCode("EncodedPhoneNumber", "EncodedToken");
+        //    //assert
+        //    Assert.Equal(result, actual);
+        //}
     }
 }

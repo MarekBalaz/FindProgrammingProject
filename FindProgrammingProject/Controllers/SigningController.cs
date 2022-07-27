@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FindProgrammingProject.Controllers
 {
-    public class SigningController : Controller
+    [ApiController]
+    public class SigningController : ControllerBase
     {
         private ISignClass signClass;
         private IVerification? verification;
@@ -25,140 +26,141 @@ namespace FindProgrammingProject.Controllers
             this.signInManager = signInManager;
         }
         //This action will either sign in person or return sign in view
-        public async Task<IActionResult> SignIn(string Email = "", string Password = "", string ReturnUrl = "Home/Index")
+        [HttpGet]
+        [Route("signing/signin")]
+        public async Task<string> SignIn(string Email = "", string Password = "", string ReturnUrl = "Home/Index")
         {
             if(Email == "" && Password == "")
             {
-                ViewBag.Message = "Credentials were not set";
-                return View("FPP-Signin");
+                
+                return "Credentials were not set";
             }
             else if(Email == "" || Password == "")
             {
-                ViewBag.Message = "Credentials were not set";
-                return View("FPP-Signin");
+                return "Credentials were not set";
             }
             else
             {
-                FunctionalClasses.SigningLogic.SignInResult result = await signClass.SignIn(Email,Password);
-                if (result == FunctionalClasses.SigningLogic.SignInResult.Success)
+                SigningResult result = await signClass.SignIn(Email,Password);
+                if (result == SigningResult.Success)
                 {
-                    return View(ReturnUrl);
+                    return SigningResult.Success.ToString();
                 }
                 else
                 {
-                    ViewBag.Message = result;
-                    return View("FPP-Signin");
+                    return result.ToString();
                 }
             }
         }
         //This action will either sign out person or return sign out view
         //This method had to bee renamed because ControllerBase class contains method with the same name
-        public async Task<IActionResult> LogOut()
+        [HttpGet]
+        [Route("signing/signout")]
+        public async Task<string> LogOut()
         {
             await signClass.SignOut();
-            ViewBag.Message = "You were signed out succesfully";
-            return View("InfoPage");
+            return SigningResult.Success.ToString();
         }
         //This action will either sign up person or return sign up view
-        public async Task<IActionResult> SignUp(string Email, string Password, string PasswordConfirmation, string Nickname)
+        [HttpPost]
+        [Route("signing/singup")]
+        public async Task<string> SignUp(string Email, string Password, string PasswordConfirmation, string Nickname)
         {
-            SignUpResult result = await signClass.SignUp(Email,Nickname,Password,PasswordConfirmation);
-            if(result == SignUpResult.Success)
+            SigningResult result = await signClass.SignUp(Email,Nickname,Password,PasswordConfirmation);
+            if(result == SigningResult.Success)
             {
-                ViewBag.Message = "We have sent you a verification code to your email. Please verify it within the next 15 minutes or your account will be deleted";
-                return View("InfoPage");
+                return SigningResult.Success.ToString();
             }
-            ViewBag.Message = result;
-            return View("InfoPage");
+            return result.ToString();
         }
-        public async Task<IActionResult> SendResetPasswordCode(string Email)
+        [HttpGet]
+        [Route("signing/sendresetpasswordcode")]
+        public async Task<string> SendResetPasswordCode(string Email)
         {
             sender = new MailSender();
             codeGenerator = new PasswordResetCodeGenerator(userManager, sender);
             var user = await userManager.FindByEmailAsync(Email);
             if(user != null)
             {
-                SignUpResult result = await codeGenerator.GenerateCode(user);
-                if (result == SignUpResult.Success)
+                SigningResult result = await codeGenerator.GenerateCode(user);
+                if (result == SigningResult.Success)
                 {
-                    ViewBag.Message = "We have sent you a verification code to your email. Please verify it within the next 15 minutes or your account will be deleted";
-                    return View("InfoPage");
+                    return result.ToString();
                 }
-                ViewBag.Message = result;
-                return View("InfoPage");
+                return result.ToString();
             }
-            ViewBag.Message = "User does not exist";
-            return View("InfoPage");
+            return SigningResult.EmailNotFound.ToString();
         }
-        public async Task<IActionResult> VerifyResetPasswordToken(string email, string token)
+        [HttpGet]
+        [Route("singing/verifyresetpasswordtoken")]
+        public async Task<string> VerifyResetPasswordToken(string email, string token)
         {
             verification = new PasswordResetTokenVerifiction(userManager);
-            VerificationResult result = await verification.Verify(email, token);
-            if(result == VerificationResult.Success)
+            SigningResult result = await verification.Verify(email, token);
+            if(result == SigningResult.Success)
             {                   
-                return View("FPP-SetNewPassword");
+                return SigningResult.Success.ToString();
             }
-            ViewBag.Message = "Verification token was incorrect";
-            return View("InfoPage");
+            return SigningResult.IncorrectToken.ToString();
         }
-        public async Task<IActionResult> SetNewPassword(string newPassword, string newPasswordRepeated,string token, string email)
+        [HttpPost]
+        [Route("signing/setnewpassword")]
+        public async Task<string> SetNewPassword(string newPassword, string newPasswordRepeated,string token, string email)
         {
             reset = new ResetPassword(userManager,new PasswordResetTokenVerifiction(userManager));
             var result = await reset.Reset(newPassword,newPasswordRepeated,token,email);
-            if(result == ResetResponse.Success)
+            if(result == SigningResult.Success)
             {
-                ViewBag.Message = "Your password has been reset";
-                return View("InfoPage");
+                return SigningResult.Success.ToString();
             }
-            ViewBag.Message = result;
-            return View("InfoPage");
+            return result.ToString();
         }
-        public async Task<IActionResult> SendEmailVerificationCode(string Email)
+        [HttpGet]
+        [Route("singing/sendemailverificationcode")]
+        public async Task<string> SendEmailVerificationCode(string Email)
         {
             sender = new MailSender();
             codeGenerator = new EmailVerificationCodeGenerator(userManager,sender);
             var user = await userManager.FindByEmailAsync(Email);
             if(user != null)
             {
-                SignUpResult result = await codeGenerator.GenerateCode(user);
-                if (result == SignUpResult.Success)
+                SigningResult result = await codeGenerator.GenerateCode(user);
+                if (result == SigningResult.Success)
                 {
-                    ViewBag.Message = "We have sent you a verification code to your email. Please verify it within the next 15 minutes or your account will be deleted";
-                    return View("InfoPage");
+                    return SigningResult.Success.ToString();
                 }
-                ViewBag.Message = result;
-                return View("InfoPage");
+                return result.ToString();
             }
-            ViewBag.Message = "User was not found";
-            return View("InfoPage");
+            return SigningResult.EmailNotFound.ToString();
         }
-        public async Task<IActionResult> VerifyEmail(string Email, string Token)
+        [HttpGet]
+        [Route("singing/verifyemail")]
+        public async Task<string> VerifyEmail(string Email, string Token)
         {
             verification = new EmailTokenVerification(userManager,signInManager);
-            VerificationResult result = await verification.Verify(Email, Token);
-            if(result == VerificationResult.Success)
+            SigningResult result = await verification.Verify(Email, Token);
+            if(result == SigningResult.Success)
             {
-                ViewBag.Message = result;
-                return View("InfoPage");
+                return SigningResult.Success.ToString();
             }
-            ViewBag.Message = result;
-            return View("InfoPage");
+            return result.ToString();
         }       
         public IActionResult SendThirdPartySignIn(string provider)
         {
             var options = signInManager.ConfigureExternalAuthenticationProperties(provider, "ThirdPartySignIn");
             return Challenge(options, provider);
         }
-        public async Task<IActionResult> ThirdPartySignIn()
+        [HttpGet]
+        [Route("signing/thirdpartysignin")]
+        public async Task<string> ThirdPartySignIn()
         {
             var result = await signInManager.GetExternalLoginInfoAsync();
             var response = await signClass.ThirdPartySignIn(result);
-            if(response == ExternalLoginResponse.Success)
+            if(response == SigningResult.Success)
             {
-                return View("Home/Index");
+                return SigningResult.Success.ToString();
             }
-            ViewBag.Message = response;
-            return View("InfoPage");
+            return response.ToString();
         }
     }
 }

@@ -4,12 +4,7 @@ using System.Web;
 
 namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 {
-    public enum ResetResponse
-    {
-        PasswordsDoNotMatch,
-        Success,
-        IncorrectToken
-    }
+    
     public class ResetPassword : IReset
     {
         private PasswordResetTokenVerifiction verification;
@@ -20,28 +15,28 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             this.verification = verification;
 
         }
-        public async Task<ResetResponse> Reset(string newPassword, string newPasswordRepeated, string token, string email)
+        public async Task<SigningResult> Reset(string newPassword, string newPasswordRepeated, string token, string email)
         {
             if(newPassword == newPasswordRepeated)
             {
                 var result = await verification.Verify(HttpUtility.UrlEncode(email), HttpUtility.UrlEncode(token));
-                if(result == VerificationResult.Success)
+                if(result == SigningResult.Success)
                 {
                     User user = await userManager.FindByEmailAsync(email);
-                    var resetResult = await userManager.ResetPasswordAsync(user,token,newPassword);
-                    if(resetResult.Succeeded)
+                    IdentityResult resetResult = await userManager.ResetPasswordAsync(user,token,newPassword);
+                    if(resetResult.Succeeded == true)
                     {
-                        return ResetResponse.Success;
+                        return SigningResult.Success;
                     }
                 }
-                return ResetResponse.IncorrectToken;
+                return SigningResult.IncorrectToken;
             }
-            return ResetResponse.PasswordsDoNotMatch;
+            return SigningResult.PasswordsDoNotMatch;
         }
     }
     public interface IReset
     {
-        public Task<ResetResponse> Reset(string newPassword, string newPasswordRepeated, string token, string email);
+        public Task<SigningResult> Reset(string newPassword, string newPasswordRepeated, string token, string email);
     }
     
 }

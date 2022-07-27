@@ -5,35 +5,26 @@ using System.Security.Claims;
 namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 {
 
-    public enum ExternalLoginResponse
-    {
-        Success,
-        DataDidNotCome,
-        AccountLockedOut
-    }
-    public enum SignInResult
+    public enum SigningResult
     {
         Success,
         IncorrectPassword,
         EmailNotVerified,
         AccountLockedOut,
-        EmailNotFound
-    }
-    public enum SignUpResult
-    {
-        Success,
+        EmailNotFound,
         PasswordsDoNotMatch,
         EmailIsAlreadyRegistered,
         EmailIncorrect,
+        DataDidNotCome,
+        IncorrectToken,
         Error
     }
-
     public interface ISignClass
     {
-        Task<SignInResult> SignIn(string Email, string Password);
-        Task<SignInResult> SignOut();
-        Task<SignUpResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation);
-        Task<ExternalLoginResponse> ThirdPartySignIn(ExternalLoginInfo result);
+        Task<SigningResult> SignIn(string Email, string Password);
+        Task<SigningResult> SignOut();
+        Task<SigningResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation);
+        Task<SigningResult> ThirdPartySignIn(ExternalLoginInfo result);
     }
 
     public class SignClass : ISignClass
@@ -49,37 +40,37 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             codeGenerator = new EmailVerificationCodeGenerator(_userManager,new MailSender());
             creation = _creation;
         }
-        public async Task<SignInResult> SignIn(string Email, string Password)
+        public async Task<SigningResult> SignIn(string Email, string Password)
         {
             var user = await userManager.FindByEmailAsync(Email);
             if (user == null)
             {
-                return SignInResult.EmailNotFound;
+                return SigningResult.EmailNotFound;
             }
             var result = await signInManager.PasswordSignInAsync(Email, Password, true, false);
             if (result.Succeeded)
             {
-                return SignInResult.Success;
+                return SigningResult.Success;
             }
             else if (result.IsLockedOut)
             {
-                return SignInResult.AccountLockedOut;
+                return SigningResult.AccountLockedOut;
             }
             else if (user.EmailConfirmed == false)
             {
-                return SignInResult.EmailNotVerified;
+                return SigningResult.EmailNotVerified;
             }
             else
             {
-                return SignInResult.IncorrectPassword;
+                return SigningResult.IncorrectPassword;
             }
         }
-        public async Task<SignInResult> SignOut()
+        public async Task<SigningResult> SignOut()
         {
             await signInManager.SignOutAsync();
-            return SignInResult.Success;
+            return SigningResult.Success;
         }
-        public async Task<SignUpResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation)
+        public async Task<SigningResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation)
         {
             if (Password == PasswordConfirmation)
             {
@@ -95,29 +86,29 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 else
                 {
                     //Here we will return email already exist
-                    return SignUpResult.EmailIsAlreadyRegistered;
+                    return SigningResult.EmailIsAlreadyRegistered;
                 }
             }
             else
             {
-                return SignUpResult.PasswordsDoNotMatch;
+                return SigningResult.PasswordsDoNotMatch;
             }
 
         }
-        public async Task<ExternalLoginResponse> ThirdPartySignIn(ExternalLoginInfo result)
+        public async Task<SigningResult> ThirdPartySignIn(ExternalLoginInfo result)
         {
             if (result == null)
             {
-                return ExternalLoginResponse.DataDidNotCome;
+                return SigningResult.DataDidNotCome;
             }
             var loginResult = await signInManager.ExternalLoginSignInAsync(result.LoginProvider,result.ProviderKey,true,true);
             if(loginResult.Succeeded)
             {
-                return ExternalLoginResponse.Success;
+                return SigningResult.Success;
             }
             else if(loginResult.IsLockedOut)
             {
-                return ExternalLoginResponse.AccountLockedOut;
+                return SigningResult.AccountLockedOut;
             }
             else
             {
@@ -144,7 +135,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 }
             }
 
-            return ExternalLoginResponse.Success;
+            return SigningResult.Success;
         }
     }
 
