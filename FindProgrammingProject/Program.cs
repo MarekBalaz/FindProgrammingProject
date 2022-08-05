@@ -3,29 +3,70 @@ using FindProgrammingProject.FunctionalClasses.SigningLogic;
 using FindProgrammingProject.Models;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Nest;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Configuration;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var configuration = System.Configuration.ConfigurationManager.AppSettings;
-Serilog.Log.Logger = new LoggerConfiguration().MinimumLevel.Warning().WriteTo.Elasticsearch(new ElasticsearchSinkOptions()).CreateLogger();
+var reader = new AppSettingsReader();
+var appSettings = System.Configuration.ConfigurationManager.AppSettings;
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+Serilog.Log.Logger = new LoggerConfiguration()
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri((string)reader.GetValue("ElasticSearchUri",typeof(string)))
+    {
+        //set options for elasticsearch
+    }
+    ))
+    .ReadFrom.Configuration(configuration)
+    .CreateLogger();
 // Add services to the container. 
 //builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddLogging();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(x =>
+builder.Logging.AddSerilog();
+builder.Services.AddAuthentication(x =>
+
 {
-    x.LoginPath = "Signing/SignIn";
-    x.LogoutPath = "Signing/SignOut";
-    x.Cookie.Name = "AuthenticationCookie_FindProgrammingProject";
-    x.Cookie.Expiration = TimeSpan.FromMinutes(1);
-})//.AddGoogle(x =>
+
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+}).AddJwtBearer(o =>
+{
+
+    var Key = Encoding.UTF8.GetBytes("a8d1fe1a-9523-4a2a-a72c-3b0fedd75bd5");
+
+    o.SaveToken = true;
+
+    o.TokenValidationParameters = new TokenValidationParameters
+
+    {
+
+        ValidateIssuer = true,
+
+        ValidateAudience = true,
+
+        ValidIssuer = "https://localhost:7168",
+
+        ValidAudience = "https://localhost:7168",
+
+        ValidateLifetime = true,
+
+        ValidateIssuerSigningKey = true,
+
+        IssuerSigningKey = new SymmetricSecurityKey(Key),
+
+    };
+
+}) //.AddGoogle(x =>
 //{
 //    x.ClientId = "";
 //    x.ClientSecret = "";
@@ -41,11 +82,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 ;
 builder.Services.AddDbContext<UserContext>(x =>
 {
-    x.UseSqlServer(configuration["MSSQLConnectionString"]);
+    x.UseSqlServer((string)reader.GetValue("MSSQLConnectionString", typeof(string)));
 });
 builder.Services.AddIdentity<User, IdentityRole>(x =>
  {
-     x.SignIn.RequireConfirmedEmail = true;
+     //x.SignIn.RequireConfirmedEmail = true;
      x.User.RequireUniqueEmail = true;
 
  }).AddEntityFrameworkStores<UserContext>();

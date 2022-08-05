@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "CJ4sTX3Lh3yz6NJKoyVwUwBiyeNaBPXJyb6fwTcNeQk=",
+  "Hash": "dYYxoCzu4HJT+UHk2y8jasGAttHCWoZl55BfKw/NqvY=",
   "Source": "FindProgrammingProject",
   "BasePath": "_content/FindProgrammingProject",
   "Mode": "Default",
@@ -16,40 +16,6 @@
     }
   ],
   "Assets": [
-    {
-      "Identity": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\obj\\Debug\\net6.0\\scopedcss\\bundle\\FindProgrammingProject.styles.css",
-      "SourceId": "FindProgrammingProject",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\obj\\Debug\\net6.0\\scopedcss\\bundle\\",
-      "BasePath": "_content/FindProgrammingProject",
-      "RelativePath": "FindProgrammingProject.styles.css",
-      "AssetKind": "All",
-      "AssetMode": "CurrentProject",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "ScopedCss",
-      "AssetTraitValue": "ApplicationBundle",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\obj\\Debug\\net6.0\\scopedcss\\bundle\\FindProgrammingProject.styles.css"
-    },
-    {
-      "Identity": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\FindProgrammingProject.bundle.scp.css",
-      "SourceId": "FindProgrammingProject",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\",
-      "BasePath": "_content/FindProgrammingProject",
-      "RelativePath": "FindProgrammingProject.bundle.scp.css",
-      "AssetKind": "All",
-      "AssetMode": "Reference",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "ScopedCss",
-      "AssetTraitValue": "ProjectBundle",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\FindProgrammingProject.bundle.scp.css"
-    },
     {
       "Identity": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\wwwroot\\css\\site.css",
       "SourceId": "FindProgrammingProject",

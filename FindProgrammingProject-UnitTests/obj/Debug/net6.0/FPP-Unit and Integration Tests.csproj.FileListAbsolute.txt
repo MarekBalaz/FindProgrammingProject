@@ -464,3 +464,9 @@ C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTe
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\obj\Debug\net6.0\FPP-Unit and Integration Tests.pdb
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\obj\Debug\net6.0\FPP-Unit and Integration Tests.genruntimeconfig.cache
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\obj\Debug\net6.0\ref\FPP-Unit and Integration Tests.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\refs\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\refs\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\refs\Microsoft.Extensions.Identity.Core.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\refs\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\refs\System.IO.Pipelines.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

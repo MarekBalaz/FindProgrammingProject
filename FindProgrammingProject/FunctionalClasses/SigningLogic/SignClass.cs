@@ -21,10 +21,10 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
     }
     public interface ISignClass
     {
-        Task<SigningResult> SignIn(string Email, string Password);
-        Task<SigningResult> SignOut();
+        Task<string> SignIn(string Email, string Password);
+        //Task<SigningResult> SignOut();
         Task<SigningResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation);
-        Task<SigningResult> ThirdPartySignIn(ExternalLoginInfo result);
+        Task<string> ThirdPartySignIn(ExternalLoginInfo result);
     }
 
     public class SignClass : ISignClass
@@ -33,52 +33,55 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         private SignInManager<User> signInManager;
         private ICodeGenerator codeGenerator;
         private ICreation creation;
-        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, ICreation _creation)
+        private IJwtTokenGenerator jwtTokenGenerator;
+        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, ICreation _creation, IJwtTokenGenerator jwtTokenGenerator)
         {
             userManager = _userManager;
             signInManager = _signInManager;
-            codeGenerator = new EmailVerificationCodeGenerator(_userManager,new MailSender());
+            codeGenerator = new EmailVerificationCodeGenerator(_userManager, new MailSender());
             creation = _creation;
+            this.jwtTokenGenerator = jwtTokenGenerator;
         }
-        public async Task<SigningResult> SignIn(string Email, string Password)
+        public async Task<string> SignIn(string Email, string Password)
         {
             var user = await userManager.FindByEmailAsync(Email);
             if (user == null)
             {
-                return SigningResult.EmailNotFound;
+                return SigningResult.EmailNotFound.ToString();
             }
-            var result = await signInManager.PasswordSignInAsync(Email, Password, true, false);
-            if (result.Succeeded)
+            var result = await userManager.CheckPasswordAsync(user, Password);  
+            if (result)
             {
-                return SigningResult.Success;
-            }
-            else if (result.IsLockedOut)
-            {
-                return SigningResult.AccountLockedOut;
-            }
-            else if (user.EmailConfirmed == false)
-            {
-                return SigningResult.EmailNotVerified;
+                return jwtTokenGenerator.GetJwtToken(user);
             }
             else
             {
-                return SigningResult.IncorrectPassword;
-            }
+                if(user.EmailConfirmed == false)
+                {
+                    return SigningResult.EmailNotVerified.ToString();
+                }
+                else if(await userManager.IsLockedOutAsync(user))
+                {
+                    return SigningResult.AccountLockedOut.ToString();
+                }
+                return SigningResult.IncorrectPassword.ToString();
+            } 
         }
-        public async Task<SigningResult> SignOut()
-        {
-            await signInManager.SignOutAsync();
-            return SigningResult.Success;
-        }
+        //public async Task<SigningResult> SignOut()
+        //{
+        //    await signInManager.SignOutAsync();
+        //    return SigningResult.Success;
+        //}
         public async Task<SigningResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation)
         {
             if (Password == PasswordConfirmation)
             {
+                
                 var result = await userManager.FindByEmailAsync(Email);
                 if (result == null)
                 {
                     //Here we will generate email confirmation code and send it to email
-                    //We will need to set event in database to clear all unconfirmed accounts after 15 minutes
+                    //We will need to set event in database to clear all unconfirmed accounts after 30 minutes
                     User user = await creation.Create(Email, Password, Nickname);
 
                     return await codeGenerator.GenerateCode(user);
@@ -95,20 +98,20 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             }
 
         }
-        public async Task<SigningResult> ThirdPartySignIn(ExternalLoginInfo result)
+        public async Task<string> ThirdPartySignIn(ExternalLoginInfo result)
         {
             if (result == null)
             {
-                return SigningResult.DataDidNotCome;
+                return SigningResult.DataDidNotCome.ToString();
             }
             var loginResult = await signInManager.ExternalLoginSignInAsync(result.LoginProvider,result.ProviderKey,true,true);
             if(loginResult.Succeeded)
             {
-                return SigningResult.Success;
+                return SigningResult.Success.ToString();
             }
             else if(loginResult.IsLockedOut)
             {
-                return SigningResult.AccountLockedOut;
+                return SigningResult.AccountLockedOut.ToString();
             }
             else
             {
@@ -122,7 +125,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                     await userManager.AddLoginAsync(newUser, result);
                     newUser.EmailConfirmed = true;
                     await userManager.UpdateAsync(newUser);
-                    await signInManager.SignInAsync(newUser, true);
+                    return jwtTokenGenerator.GetJwtToken(newUser);
                 }
                 else
                 {
@@ -130,12 +133,13 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                     await userManager.AddLoginAsync(user, result);
                     user.EmailConfirmed = true;
                     await userManager.UpdateAsync(user);
-                    await signInManager.SignInAsync(user,true);
-                    
+                    return jwtTokenGenerator.GetJwtToken(user);
+
                 }
+                
             }
 
-            return SigningResult.Success;
+            
         }
     }
 

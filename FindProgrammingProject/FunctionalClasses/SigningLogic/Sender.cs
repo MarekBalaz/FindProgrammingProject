@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Configuration;
+using System.Net;
 using System.Net.Mail;
 using System.Web;
 
@@ -13,12 +14,14 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
     {
         public async Task<SigningResult> SendCode(string EncodedEmail, string EncodedToken)
         {
+            var reader = new AppSettingsReader();
+
             var appSettings = System.Configuration.ConfigurationManager.AppSettings;
             string decodedEmail = HttpUtility.UrlDecode(EncodedEmail);
             MailMessage mailMessage = new MailMessage();
             mailMessage.Subject = "Email Verification";
             //here we will add code into html code
-            mailMessage.From = new MailAddress("marekgamingacc@gmail.com");
+            mailMessage.From = new MailAddress((string)reader.GetValue("Email",typeof(string)));
             mailMessage.To.Add(new MailAddress(decodedEmail));
             mailMessage.Body = "";
             mailMessage.IsBodyHtml = true;
@@ -26,17 +29,11 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             smtpClient.Host = "smtp.gmail.com";
             smtpClient.Port = 587;
             smtpClient.EnableSsl = true;
-            NetworkCredential nc = new NetworkCredential("marekgamingacc@gmail.com", "nyfvvrvfineixyvt");
+            NetworkCredential nc = new NetworkCredential((string)reader.GetValue("Email",typeof(string)), (string)reader.GetValue("EmailVerificationCode", typeof(string)));
             smtpClient.UseDefaultCredentials = false;
             smtpClient.Credentials = nc;
-            try
-            {
-                smtpClient.Send(mailMessage);
-            }
-            catch (Exception ex)
-            {
-                return SigningResult.EmailIncorrect;
-            }
+            smtpClient.Send(mailMessage);
+           
             return SigningResult.Success;
         }
     }

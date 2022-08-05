@@ -15,6 +15,7 @@
         string ProjectType { get; set; }
         bool Started { get; set; }
         string Title { get; set; }
+        int Upvotes { get; set; }
     }
 
     public class Project : IProject
@@ -22,6 +23,7 @@
         private string id;
         private string title;
         private string description;
+        private int upvotes;
         private bool started;
         private bool group;
         private string creatorId;
@@ -36,6 +38,7 @@
         public string Id { get => id; set => id = value; }
         public string Title { get => title; set => title = value; }
         public string Description { get => description; set => description = value; }
+        public int Upvotes { get => upvotes; set => upvotes = value; }
         public bool Started { get => started; set => started = value; }
         public bool Group { get => group; set => group = value; }
         public string CreatorId { get => creatorId; set => creatorId = value; }

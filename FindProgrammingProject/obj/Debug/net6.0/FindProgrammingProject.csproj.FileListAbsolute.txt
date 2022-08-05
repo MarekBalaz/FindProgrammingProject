@@ -78,16 +78,13 @@ C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\De
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.AssemblyInfo.cs
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.csproj.CoreCompileInputs.cache
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.RazorAssemblyInfo.cache
-C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.RazorAssemblyInfo.cs
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\staticwebassets.build.json
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\staticwebassets.development.json
-C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\scopedcss\bundle\FindProgrammingProject.styles.css
-C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\scopedcss\projectbundle\FindProgrammingProject.bundle.scp.css
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.csproj.CopyComplete
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.dll
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\refint\FindProgrammingProject.dll
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.pdb
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.genruntimeconfig.cache
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\obj\Debug\net6.0\ref\FindProgrammingProject.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -27,12 +27,10 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             {
                 await userManager.ConfirmEmailAsync(user,Token);
                 await userManager.UpdateAsync(user);
-                await signInManager.SignInAsync(user,true);
                 return SigningResult.Success;
             }
             else
             {
-                await userManager.DeleteAsync(user);
                 return SigningResult.IncorrectToken;
             }
 
