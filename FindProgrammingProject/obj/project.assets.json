@@ -701,13 +701,13 @@
           "lib/net5.0/Serilog.dll": {}
         }
       },
-      "Serilog.AspNetCore/5.0.0": {
+      "Serilog.AspNetCore/6.0.1": {
         "type": "package",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "5.0.0",
           "Microsoft.Extensions.Logging": "5.0.0",
           "Serilog": "2.10.0",
-          "Serilog.Extensions.Hosting": "4.2.0",
+          "Serilog.Extensions.Hosting": "5.0.1",
           "Serilog.Formatting.Compact": "1.1.0",
           "Serilog.Settings.Configuration": "3.3.0",
           "Serilog.Sinks.Console": "4.0.1",
@@ -724,7 +724,7 @@
           "Microsoft.AspNetCore.App"
         ]
       },
-      "Serilog.Extensions.Hosting/4.2.0": {
+      "Serilog.Extensions.Hosting/5.0.1": {
         "type": "package",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.8",
@@ -2519,10 +2519,10 @@
         "serilog.nuspec"
       ]
     },
-    "Serilog.AspNetCore/5.0.0": {
-      "sha512": "/JO/txIxRR61x1UXQAgUzG2Sx05o1QHCkokVBWrKzmAoDu+p5EtCAj7L/TVVg7Ezhh3GPiZ0JI9OJCmRO9tSRw==",
+    "Serilog.AspNetCore/6.0.1": {
+      "sha512": "5XW90k62V7G9I0D/j9Iz+NyRBB6/SnoFpHUPeLnV40gONV2vs2A/ewWi91QVjQmyHBfzFeqIrkvE/DJMZ0alTg==",
       "type": "package",
-      "path": "serilog.aspnetcore/5.0.0",
+      "path": "serilog.aspnetcore/6.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2535,14 +2535,14 @@
         "lib/netstandard2.0/Serilog.AspNetCore.xml",
         "lib/netstandard2.1/Serilog.AspNetCore.dll",
         "lib/netstandard2.1/Serilog.AspNetCore.xml",
-        "serilog.aspnetcore.5.0.0.nupkg.sha512",
+        "serilog.aspnetcore.6.0.1.nupkg.sha512",
         "serilog.aspnetcore.nuspec"
       ]
     },
-    "Serilog.Extensions.Hosting/4.2.0": {
-      "sha512": "gT2keceCmPQR9EX0VpXQZvUgELdfE7yqJ7MOxBhm3WLCblcvRgswEOOTgok/DHObbM15A3V/DtF3VdVDQPIZzQ==",
+    "Serilog.Extensions.Hosting/5.0.1": {
+      "sha512": "o0VUyt3npAqOJaZ6CiWLFeLYs3CYJwfcAqaUqprzsmj7qYIvorcn8cZLVR8AQX6vzX7gee2bD0sQeA17iO2/Aw==",
       "type": "package",
-      "path": "serilog.extensions.hosting/4.2.0",
+      "path": "serilog.extensions.hosting/5.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2551,7 +2551,7 @@
         "lib/netstandard2.0/Serilog.Extensions.Hosting.xml",
         "lib/netstandard2.1/Serilog.Extensions.Hosting.dll",
         "lib/netstandard2.1/Serilog.Extensions.Hosting.xml",
-        "serilog.extensions.hosting.4.2.0.nupkg.sha512",
+        "serilog.extensions.hosting.5.0.1.nupkg.sha512",
         "serilog.extensions.hosting.nuspec"
       ]
     },
@@ -4546,7 +4546,7 @@
       "Microsoft.EntityFrameworkCore.Tools >= 6.0.6",
       "NEST >= 7.17.3",
       "Serilog >= 2.11.0",
-      "Serilog.AspNetCore >= 5.0.0",
+      "Serilog.AspNetCore >= 6.0.1",
       "Serilog.Sinks.Elasticsearch >= 8.4.1"
     ]
   },
@@ -4641,7 +4641,7 @@
           },
           "Serilog.AspNetCore": {
             "target": "Package",
-            "version": "[5.0.0, )"
+            "version": "[6.0.1, )"
           },
           "Serilog.Sinks.Elasticsearch": {
             "target": "Package",

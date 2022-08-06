@@ -1,4 +1,5 @@
 ﻿using FindProgrammingProject.FunctionalClasses.SigningLogic;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,18 @@ namespace FindProgrammingProject_UnitTests.UnitTests.FunctionalClassesTests.Sign
 {
     public class SenderTests
     {
+        private IConfiguration config;
+        public SenderTests()
+        {
+            config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        }
         [Fact]
         public async Task MailSenderTest()
         {
             //arrange
             var result = SigningResult.Success;
             //act
-            ISender sender = new MailSender();
+            ISender sender = new MailSender(config);
             var actual = await sender.SendCode("EncodedEmail","EncodedToken");
             //assert
             Assert.Equal(result, actual);

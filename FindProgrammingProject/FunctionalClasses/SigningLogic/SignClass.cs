@@ -34,11 +34,11 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         private ICodeGenerator codeGenerator;
         private ICreation creation;
         private IJwtTokenGenerator jwtTokenGenerator;
-        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, ICreation _creation, IJwtTokenGenerator jwtTokenGenerator)
+        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, ICreation _creation, IJwtTokenGenerator jwtTokenGenerator, IConfiguration configuration)
         {
             userManager = _userManager;
             signInManager = _signInManager;
-            codeGenerator = new EmailVerificationCodeGenerator(_userManager, new MailSender());
+            codeGenerator = new EmailVerificationCodeGenerator(_userManager, new MailSender(configuration));
             creation = _creation;
             this.jwtTokenGenerator = jwtTokenGenerator;
         }

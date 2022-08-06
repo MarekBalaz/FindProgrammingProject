@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "No+aJt2dA2dZ1nwT/UymRkqhz43fspQqqJKz0KV+tDP2hRKitUK4iMEIt8hpZ2q03JbNO1FadcqDrJQ6LOYDgQ==",
+  "dgSpecHash": "0hKQsIsaEOPtfCwHbasnfN9VLfmjQerVOp8iOrNe63zy3r8py6M69DLLW4FW19Y/pvCY1LHAds2zNSgx2SybPg==",
   "success": true,
   "projectFilePath": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject-UnitTests\\FPP-Unit and Integration Tests.csproj",
   "expectedPackageFiles": [
@@ -97,8 +97,8 @@
     "C:\\Users\\marek\\.nuget\\packages\\runtime.win-x64.runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.win-x64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "C:\\Users\\marek\\.nuget\\packages\\runtime.win-x86.runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.win-x86.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "C:\\Users\\marek\\.nuget\\packages\\serilog\\2.11.0\\serilog.2.11.0.nupkg.sha512",
-    "C:\\Users\\marek\\.nuget\\packages\\serilog.aspnetcore\\5.0.0\\serilog.aspnetcore.5.0.0.nupkg.sha512",
-    "C:\\Users\\marek\\.nuget\\packages\\serilog.extensions.hosting\\4.2.0\\serilog.extensions.hosting.4.2.0.nupkg.sha512",
+    "C:\\Users\\marek\\.nuget\\packages\\serilog.aspnetcore\\6.0.1\\serilog.aspnetcore.6.0.1.nupkg.sha512",
+    "C:\\Users\\marek\\.nuget\\packages\\serilog.extensions.hosting\\5.0.1\\serilog.extensions.hosting.5.0.1.nupkg.sha512",
     "C:\\Users\\marek\\.nuget\\packages\\serilog.extensions.logging\\3.1.0\\serilog.extensions.logging.3.1.0.nupkg.sha512",
     "C:\\Users\\marek\\.nuget\\packages\\serilog.formatting.compact\\1.1.0\\serilog.formatting.compact.1.1.0.nupkg.sha512",
     "C:\\Users\\marek\\.nuget\\packages\\serilog.formatting.elasticsearch\\8.4.1\\serilog.formatting.elasticsearch.8.4.1.nupkg.sha512",

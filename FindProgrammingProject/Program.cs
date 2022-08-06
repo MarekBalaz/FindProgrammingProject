@@ -19,11 +19,15 @@ var reader = new AppSettingsReader();
 var appSettings = System.Configuration.ConfigurationManager.AppSettings;
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 Serilog.Log.Logger = new LoggerConfiguration()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri((string)reader.GetValue("ElasticSearchUri",typeof(string)))
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(builder.Configuration.GetValue<string>("ElasticSearchUri")))
     {
-        //set options for elasticsearch
+        IndexFormat = $"FindProgrammingProject-{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Replace(".","-")}-{DateTime.UtcNow:yyyy-MM}",
+        AutoRegisterTemplate = true,
+        NumberOfReplicas = 1,
+        NumberOfShards = 3,
+        ModifyConnectionSettings = x => x.BasicAuthentication(builder.Configuration.GetValue<string>("ElasticSearchUserName"), builder.Configuration.GetValue<string>("ElasticSearchUserPassword")),
     }
-    ))
+    )
     .ReadFrom.Configuration(configuration)
     .CreateLogger();
 // Add services to the container. 
@@ -66,23 +70,10 @@ builder.Services.AddAuthentication(x =>
 
     };
 
-}) //.AddGoogle(x =>
-//{
-//    x.ClientId = "";
-//    x.ClientSecret = "";
-//}).AddTwitter(x =>
-//{
-//    x.ConsumerKey = "";
-//    x.ConsumerSecret = "";
-//}).AddGitHub(x =>
-//{
-//    x.ClientId = "";
-//    x.ClientSecret = "";
-//})
-;
+});
 builder.Services.AddDbContext<UserContext>(x =>
 {
-    x.UseSqlServer((string)reader.GetValue("MSSQLConnectionString", typeof(string)));
+    x.UseSqlServer(builder.Configuration.GetValue<string>("MSSQLConnectionString"));
 });
 builder.Services.AddIdentity<User, IdentityRole>(x =>
  {

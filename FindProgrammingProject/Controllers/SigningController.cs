@@ -20,13 +20,15 @@ namespace FindProgrammingProject.Controllers
         private IReset? reset;
         private ISender? sender;
         private ILogger<SigningController> logger;
+        private IConfiguration configuration;
         public SigningController(ISignClass signClass, UserManager<User> userManager,
-            SignInManager<User> signInManager, ILogger<SigningController> logger)
+            SignInManager<User> signInManager, ILogger<SigningController> logger, IConfiguration configuration)
         {
             this.signClass = signClass;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
+            this.configuration = configuration;
         }
         //This action will either sign in person or return sign in view
         [HttpGet]
@@ -98,7 +100,7 @@ namespace FindProgrammingProject.Controllers
         {
             try
             {
-                sender = new MailSender();
+                sender = new MailSender(configuration);
                 codeGenerator = new PasswordResetCodeGenerator(userManager, sender);
                 var user = await userManager.FindByEmailAsync(Email);
                 if (user != null)
@@ -160,7 +162,7 @@ namespace FindProgrammingProject.Controllers
         {
             try
             {
-                sender = new MailSender();
+                sender = new MailSender(configuration);
                 codeGenerator = new EmailVerificationCodeGenerator(userManager, sender);
                 var user = await userManager.FindByEmailAsync(Email);
                 if (user != null)

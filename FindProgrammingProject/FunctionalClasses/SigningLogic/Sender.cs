@@ -12,16 +12,19 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
     }
     public class MailSender : ISender
     {
+        public IConfiguration Configuration { get; set; }
+        public MailSender(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         public async Task<SigningResult> SendCode(string EncodedEmail, string EncodedToken)
         {
-            var reader = new AppSettingsReader();
 
-            var appSettings = System.Configuration.ConfigurationManager.AppSettings;
             string decodedEmail = HttpUtility.UrlDecode(EncodedEmail);
             MailMessage mailMessage = new MailMessage();
             mailMessage.Subject = "Email Verification";
             //here we will add code into html code
-            mailMessage.From = new MailAddress((string)reader.GetValue("Email",typeof(string)));
+            mailMessage.From = new MailAddress(Configuration.GetValue<string>("Email"));
             mailMessage.To.Add(new MailAddress(decodedEmail));
             mailMessage.Body = "";
             mailMessage.IsBodyHtml = true;
@@ -29,7 +32,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             smtpClient.Host = "smtp.gmail.com";
             smtpClient.Port = 587;
             smtpClient.EnableSsl = true;
-            NetworkCredential nc = new NetworkCredential((string)reader.GetValue("Email",typeof(string)), (string)reader.GetValue("EmailVerificationCode", typeof(string)));
+            NetworkCredential nc = new NetworkCredential(Configuration.GetValue<string>("Email"), Configuration.GetValue<string>("EmailVerificationCode"));
             smtpClient.UseDefaultCredentials = false;
             smtpClient.Credentials = nc;
             smtpClient.Send(mailMessage);
