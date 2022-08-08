@@ -24,6 +24,10 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             return result;
 
         }
+        public async Task<string> GetCode(User user)
+        {
+            return await userManager.GeneratePasswordResetTokenAsync(user);
+        }
     }
     public class EmailVerificationCodeGenerator : ICodeGenerator
     {
@@ -51,10 +55,16 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 return SigningResult.Error;
             }
         }
+
+        public async Task<string> GetCode(User user)
+        {
+            return await userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
     }
     public interface ICodeGenerator
     {
         public Task<SigningResult> GenerateCode(User user);
+        public Task<string> GetCode(User user);
     }
 
 

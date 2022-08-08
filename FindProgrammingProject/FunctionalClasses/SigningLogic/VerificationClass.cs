@@ -1,5 +1,7 @@
 ﻿using FindProgrammingProject.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Web;
 
 namespace FindProgrammingProject.FunctionalClasses.SigningLogic
@@ -59,6 +61,20 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             }
             return SigningResult.IncorrectToken;
 
+        }
+    }
+    public class AuthorizationTokenVerification : IVerification
+    {
+        public async Task<SigningResult> Verify(string Email, string Token)
+        {
+            SecurityToken token;
+            
+            var response = new JwtSecurityTokenHandler().ValidateToken(Token,new TokenValidationParameters { ValidateLifetime = true}, out token);
+            if(response == null)
+            {
+                return SigningResult.IncorrectToken;
+            }
+            return SigningResult.Success;
         }
     }
 

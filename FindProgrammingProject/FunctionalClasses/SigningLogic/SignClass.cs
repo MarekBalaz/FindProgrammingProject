@@ -17,6 +17,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         EmailIncorrect,
         DataDidNotCome,
         IncorrectToken,
+        CredentialsNotSet,
         Error
     }
     public interface ISignClass
@@ -78,6 +79,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             {
                 
                 var result = await userManager.FindByEmailAsync(Email);
+                
                 if (result == null)
                 {
                     //Here we will generate email confirmation code and send it to email
@@ -107,7 +109,9 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             var loginResult = await signInManager.ExternalLoginSignInAsync(result.LoginProvider,result.ProviderKey,true,true);
             if(loginResult.Succeeded)
             {
-                return SigningResult.Success.ToString();
+                var email = result.Principal.Claims.First(x => x.Type == ClaimTypes.Email).Value;
+                var user = await userManager.FindByEmailAsync(email);
+                return jwtTokenGenerator.GetJwtToken(user);
             }
             else if(loginResult.IsLockedOut)
             {
