@@ -1,4 +1,7 @@
-﻿namespace FindProgrammingProject.Models
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace FindProgrammingProject.Models
 {
     public interface IComment
     {
@@ -11,6 +14,7 @@
 
     public class Comment : IComment
     {
+        [Key]
         private string id;
         private string personId;
         private string projectId;
@@ -23,4 +27,5 @@
         public string CommentContent { get => commentContent; set => commentContent = value; }
         public DateTime Date { get => date; set => date = value; }
     }
+    
 }

@@ -2,11 +2,8 @@
 
 namespace FindProgrammingProject.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : ControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        
     }
 }

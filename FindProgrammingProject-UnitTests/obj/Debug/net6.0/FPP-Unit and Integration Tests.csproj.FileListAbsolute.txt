@@ -470,3 +470,7 @@ C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTe
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\refs\Microsoft.Extensions.Identity.Stores.dll
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\refs\System.IO.Pipelines.dll
 C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\Microsoft.OpenApi.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\marek\source\repos\FindProgrammingProject\FindProgrammingProject-UnitTests\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerUI.dll

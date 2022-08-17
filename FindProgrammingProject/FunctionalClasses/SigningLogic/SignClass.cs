@@ -30,17 +30,17 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 
     public class SignClass : ISignClass
     {
-        private UserManager<User> userManager;
-        private SignInManager<User> signInManager;
+        public UserManager<User> userManager;
+        public SignInManager<User> signInManager;
         private ICodeGenerator codeGenerator;
         private ICreation creation;
         private IJwtTokenGenerator jwtTokenGenerator;
-        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, ICreation _creation, IJwtTokenGenerator jwtTokenGenerator, IConfiguration configuration)
+        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, IJwtTokenGenerator jwtTokenGenerator, IConfiguration configuration)
         {
             userManager = _userManager;
             signInManager = _signInManager;
             codeGenerator = new EmailVerificationCodeGenerator(_userManager, new MailSender(configuration));
-            creation = _creation;
+            creation = new Creation(_userManager);
             this.jwtTokenGenerator = jwtTokenGenerator;
         }
         public async Task<string> SignIn(string Email, string Password)

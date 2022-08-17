@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace FindProgrammingProject.Models
 {
@@ -19,8 +20,9 @@ namespace FindProgrammingProject.Models
 
     public class User : IdentityUser, IUser
     {
-        
-        private byte[] profilePicture;
+
+
+        private byte[]? profilePicture;
         private string description;
         private List<string> projectId;
         private List<string> groupId;
@@ -31,9 +33,10 @@ namespace FindProgrammingProject.Models
         private List<string> bannedusers;
         private string websocketid;
         private List<string> contacts;
-        
 
-        public byte[] ProfilePicture { get => profilePicture; set => profilePicture = value; }
+        [Key]
+        public string Id;
+        public byte[]? ProfilePicture { get => profilePicture; set => profilePicture = value; }
         public string Description { get => description; set => description = value; }
         public List<string> ProjectId { get => projectId; set => projectId = value; }
         public List<string> GroupId { get => groupId; set => groupId = value; }

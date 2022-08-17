@@ -1,9 +1,12 @@
-﻿namespace FindProgrammingProject.Models
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace FindProgrammingProject.Models
 {
     public class Invite : IInvite
     {
 
-
+        [Key]
         private string id;
         private string title;
         private string text;
@@ -28,4 +31,5 @@
         string ToId { get; set; }
         DateTime Date { get; set; }
     }
+    
 }

@@ -1,4 +1,9 @@
-﻿namespace FindProgrammingProject.Models
+﻿
+
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace FindProgrammingProject.Models
 {
     public interface IProject
     {
@@ -20,6 +25,7 @@
 
     public class Project : IProject
     {
+        [Key]
         private string id;
         private string title;
         private string description;
@@ -50,4 +56,5 @@
         public string ProjectType { get => projectType; set => projectType = value; }
         public DateTime DateOfCreation { get => dateOfCreation; set => dateOfCreation = value; }
     }
+   
 }

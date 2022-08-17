@@ -1,4 +1,7 @@
-﻿namespace FindProgrammingProject.Models
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace FindProgrammingProject.Models
 {
     public interface IGroup
     {
@@ -14,6 +17,7 @@
 
     public class Group : IGroup
     {
+        [Key]
         private string id;
         private string name;
         private string description;
@@ -32,4 +36,5 @@
         public List<string> PeopleId { get => peopleId; set => peopleId = value; }
         public Dictionary<string, string> UserRoles { get => userRoles; set => userRoles = value; }
     }
+
 }

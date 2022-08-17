@@ -1,4 +1,7 @@
-﻿namespace FindProgrammingProject.Models
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace FindProgrammingProject.Models
 {
     public interface ILog
     {
@@ -11,6 +14,7 @@
 
     public class Log : ILog
     {
+        [Key]
         private string id;
         private int statusCode;
         private string message;
@@ -23,4 +27,5 @@
         public string Level { get => level; set => level = value; }
         public DateTime Date { get => date; set => date = value; }
     }
+    
 }

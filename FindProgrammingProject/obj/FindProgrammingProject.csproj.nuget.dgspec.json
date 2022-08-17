@@ -13,8 +13,12 @@
         "packagesPath": "C:\\Users\\marek\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\marek\\source\\repos\\FindProgrammingProject\\FindProgrammingProject\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
           "C:\\Users\\marek\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -46,7 +50,7 @@
             },
             "Elasticsearch.Net": {
               "target": "Package",
-              "version": "[7.17.3, )"
+              "version": "[7.17.4, )"
             },
             "EntityFramework": {
               "target": "Package",
@@ -54,7 +58,7 @@
             },
             "Microsoft.AspNetCore.Authentication.Google": {
               "target": "Package",
-              "version": "[6.0.6, )"
+              "version": "[6.0.7, )"
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
@@ -62,29 +66,37 @@
             },
             "Microsoft.AspNetCore.Authentication.Twitter": {
               "target": "Package",
-              "version": "[6.0.6, )"
+              "version": "[6.0.7, )"
             },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[6.0.6, )"
             },
+            "Microsoft.AspNetCore.Mvc.Testing": {
+              "target": "Package",
+              "version": "[6.0.7, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[6.0.6, )"
+              "version": "[6.0.7, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[6.0.6, )"
+              "version": "[6.0.7, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[6.0.6, )"
+              "version": "[6.0.7, )"
             },
             "NEST": {
               "target": "Package",
-              "version": "[7.17.3, )"
+              "version": "[7.17.4, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[9.0.1, )"
             },
             "Serilog": {
               "target": "Package",

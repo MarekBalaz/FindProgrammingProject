@@ -31,7 +31,6 @@ Serilog.Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(configuration)
     .CreateLogger();
 // Add services to the container. 
-//builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddLogging();
 builder.Logging.AddSerilog();
@@ -46,7 +45,7 @@ builder.Services.AddAuthentication(x =>
 }).AddJwtBearer(o =>
 {
 
-    var Key = Encoding.UTF8.GetBytes("a8d1fe1a-9523-4a2a-a72c-3b0fedd75bd5");
+    var Key = Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("IssuerSigningKey"));
 
     o.SaveToken = true;
 
@@ -74,20 +73,29 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddDbContext<UserContext>(x =>
 {
     x.UseSqlServer(builder.Configuration.GetValue<string>("MSSQLConnectionString"));
+})
+.AddDbContext<FindProgrammingProject.Models.Context>(x =>
+{
+    x.UseSqlServer(builder.Configuration.GetValue<string>("MSSQLConnectionString"));
 });
 builder.Services.AddIdentity<User, IdentityRole>(x =>
  {
      //x.SignIn.RequireConfirmedEmail = true;
      x.User.RequireUniqueEmail = true;
+     x.Password.RequireNonAlphanumeric = false;
+     x.Password.RequiredLength = 8;
+     x.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
+     x.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
 
- }).AddEntityFrameworkStores<UserContext>();
-builder.Services.AddSingleton<ICreation>(x => new Creation((UserManager<User>)x.GetService(typeof(UserManager<User>))));
+ }).AddEntityFrameworkStores<UserContext>().AddDefaultTokenProviders();
+builder.Services.AddSingleton<IJwtTokenGenerator>(x => new JwtTokenGenerator());
 builder.Services.Configure<DataProtectionTokenProviderOptions>(x =>
 {
-    x.TokenLifespan = TimeSpan.FromMinutes(5);
+    x.TokenLifespan = TimeSpan.FromMinutes(15);
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -104,7 +112,6 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

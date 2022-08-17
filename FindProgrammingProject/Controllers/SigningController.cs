@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using System.Web;
 
 namespace FindProgrammingProject.Controllers
 {
@@ -21,10 +22,11 @@ namespace FindProgrammingProject.Controllers
         private ISender? sender;
         private ILogger<SigningController> logger;
         private IConfiguration configuration;
-        public SigningController(ISignClass signClass, UserManager<User> userManager,
-            SignInManager<User> signInManager, ILogger<SigningController> logger, IConfiguration configuration)
+        private ICreation creation;
+        public SigningController(UserManager<User> userManager,
+            SignInManager<User> signInManager, ILogger<SigningController> logger, IConfiguration configuration, IJwtTokenGenerator jwtTokenGenerator)
         {
-            this.signClass = signClass;
+            this.signClass = new SignClass(userManager, signInManager, jwtTokenGenerator, configuration);
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
@@ -32,11 +34,13 @@ namespace FindProgrammingProject.Controllers
         }
         //This action will either sign in person or return sign in view
         [HttpGet]
-        [Route("signing/signin")]
-        public async Task<string> SignIn(string Email = "", string Password = "", string ReturnUrl = "Home/Index")
+        [Route("/signin")]
+        public async Task<string> SignIn(string Email = "", string Password = "")
         {
             try
             {
+                Email = HttpUtility.UrlDecode(Email);
+                Password = HttpUtility.UrlDecode(Password);
                 if (Email == "" && Password == "")
                 {
                     return SigningResult.CredentialsNotSet.ToString();
@@ -46,30 +50,26 @@ namespace FindProgrammingProject.Controllers
                     return await signClass.SignIn(Email, Password);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var jsonResponse = JsonSerializer.Serialize(ex);
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error,ex,null);
+                logger.Log(LogLevel.Error, ex, null);
                 return jsonResponse;
             }
-            
-        }
-        //This endpoint will not do anything because log out will be done by removing sessions on web server
-        [HttpGet]
-        [Route("signing/signout")]
-        public void LogOut()
-        {
-            //await signClass.SignOut();
-            //return SigningResult.Success.ToString();
+
         }
         //This action will either sign up person or return sign up view
-        [HttpPost]
-        [Route("signing/singup")]
-        public async Task<string> SignUp(string Email, string Password, string PasswordConfirmation, string Nickname)
+        [HttpGet]
+        [Route("/signup")]
+        public async Task<string> SignUp(string Email = "", string Password = "", string PasswordConfirmation = "", string Nickname = "")
         {
             try
             {
+                Email = HttpUtility.UrlDecode(Email);
+                Password = HttpUtility.UrlDecode(Password);
+                PasswordConfirmation = HttpUtility.UrlDecode(PasswordConfirmation);
+                Nickname = HttpUtility.UrlDecode(Nickname);
                 if (Email == "" || Password == "" || PasswordConfirmation == "" || Nickname == "")
                 {
                     return SigningResult.CredentialsNotSet.ToString();
@@ -83,7 +83,7 @@ namespace FindProgrammingProject.Controllers
                 try
                 {
                     var addr = new System.Net.Mail.MailAddress(Email);
-                    if(addr.Address == trimmedEmail)
+                    if (addr.Address == trimmedEmail)
                     {
 
                     }
@@ -102,51 +102,52 @@ namespace FindProgrammingProject.Controllers
             }
             catch (Exception ex)
             {
-                await userManager.DeleteAsync(await userManager.FindByEmailAsync(Email));
+                var user = await userManager.FindByEmailAsync(Email);
+                if (user != null)
+                {
+                    await userManager.DeleteAsync(user);
+                }
                 Response.StatusCode = 500;
                 logger.Log(LogLevel.Error, ex, null);
                 return JsonSerializer.Serialize(ex);
             }
         }
         [HttpGet]
-        [Route("signing/getauthorizationtoken")]
+        [Route("/getauthorizationtoken")]
         public async Task<string> GetAuthorizationToken(string Email)
-        {
-            JwtTokenGenerator tokenGenerator = new JwtTokenGenerator();
-            var user = await userManager.FindByEmailAsync(Email);
-            if(user != null)
-            {
-                string token = tokenGenerator.GetJwtToken(user);
-                return token;
-            }
-            return SigningResult.EmailNotFound.ToString();
-        }
-        [HttpGet]
-        [Route("signing/verifyauthorizationtoken")]
-        public async Task<string> VerifyAuthorizationToken(string Email, string Token)
-        {
-            if(Email != "")
-            {
-                verification = new AuthorizationTokenVerification();
-                SigningResult result = await verification.Verify(Email, Token);
-
-                return result.ToString();
-            }
-            return SigningResult.EmailNotFound.ToString();
-        }
-        [HttpGet]
-        [Route("signing/sendresetpasswordcode")]
-        public async Task<string> SendResetPasswordCode(string Email)
         {
             try
             {
-                sender = new MailSender(configuration);
-                codeGenerator = new PasswordResetCodeGenerator(userManager, sender);
+                Email = HttpUtility.UrlDecode(Email);
+                JwtTokenGenerator tokenGenerator = new JwtTokenGenerator();
                 var user = await userManager.FindByEmailAsync(Email);
                 if (user != null)
                 {
-                    SigningResult result = await codeGenerator.GenerateCode(user);
-                    
+                    string token = tokenGenerator.GetJwtToken(user);
+                    return token;
+                }
+                return SigningResult.EmailNotFound.ToString();
+            }
+            catch (Exception ex)
+            {
+                Response.StatusCode = 500;
+                logger.Log(LogLevel.Error, ex, null);
+                return JsonSerializer.Serialize(ex);
+            }
+        }
+        [HttpGet]
+        [Route("/verifyauthorizationtoken")]
+        public async Task<string> VerifyAuthorizationToken(string Email, string Token)
+        {
+            try
+            {
+                Email = HttpUtility.UrlDecode(Email);
+                Token = HttpUtility.UrlDecode(Token);
+                if (Email != "")
+                {
+                    verification = new AuthorizationTokenVerification(configuration);
+                    SigningResult result = await verification.Verify(Email, Token);
+
                     return result.ToString();
                 }
                 return SigningResult.EmailNotFound.ToString();
@@ -159,11 +160,37 @@ namespace FindProgrammingProject.Controllers
             }
         }
         [HttpGet]
-        [Route("signing/getresetpasswordcode")]
+        [Route("/sendresetpasswordcode")]
+        public async Task<string> SendResetPasswordCode(string Email)
+        {
+            try
+            {
+                Email = HttpUtility.UrlDecode(Email);
+                sender = new MailSender(configuration);
+                codeGenerator = new PasswordResetCodeGenerator(userManager, sender);
+                var user = await userManager.FindByEmailAsync(Email);
+                if (user != null)
+                {
+                    SigningResult result = await codeGenerator.GenerateCode(user);
+
+                    return result.ToString();
+                }
+                return SigningResult.EmailNotFound.ToString();
+            }
+            catch (Exception ex)
+            {
+                Response.StatusCode = 500;
+                logger.Log(LogLevel.Error, ex, null);
+                return JsonSerializer.Serialize(ex);
+            }
+        }
+        [HttpGet]
+        [Route("/getresetpasswordcode")]
         public async Task<string> GetResetPasswordCode(string Email)
         {
             try
             {
+                Email = HttpUtility.UrlDecode(Email);
                 //sender = new MailSender(configuration);
                 codeGenerator = new PasswordResetCodeGenerator(userManager, null);
                 var user = await userManager.FindByEmailAsync(Email);
@@ -183,12 +210,13 @@ namespace FindProgrammingProject.Controllers
             }
         }
         [HttpGet]
-        [Route("singing/verifyresetpasswordtoken")]
-        public async Task<string> VerifyResetPasswordToken(string email, string token)
+        [Route("/verifyresetpasswordtoken")]
+        public async Task<string> VerifyResetPasswordToken(string email = "", string token = "")
         {
             try
             {
-                if(email == "" || token == "")
+
+                if (email == "" || token == "")
                 {
                     return SigningResult.CredentialsNotSet.ToString();
                 }
@@ -207,13 +235,13 @@ namespace FindProgrammingProject.Controllers
                 return JsonSerializer.Serialize(ex);
             }
         }
-        [HttpPost]
-        [Route("signing/setnewpassword")]
-        public async Task<string> SetNewPassword(string newPassword, string newPasswordRepeated,string token, string email)
+        [HttpGet]
+        [Route("/setnewpassword")]
+        public async Task<string> SetNewPassword(string newPassword, string newPasswordRepeated, string token, string email)
         {
             try
             {
-                if(newPassword == ""|| newPasswordRepeated == "" || token == "" || email == "")
+                if (newPassword == "" || newPasswordRepeated == "" || token == "" || email == "")
                 {
                     return SigningResult.CredentialsNotSet.ToString();
                 }
@@ -229,18 +257,19 @@ namespace FindProgrammingProject.Controllers
             }
         }
         [HttpGet]
-        [Route("singing/sendemailverificationcode")]
+        [Route("/sendemailverificationcode")]
         public async Task<string> SendEmailVerificationCode(string Email)
         {
             try
             {
+                Email = HttpUtility.UrlDecode(Email);
                 sender = new MailSender(configuration);
                 codeGenerator = new EmailVerificationCodeGenerator(userManager, sender);
                 var user = await userManager.FindByEmailAsync(Email);
                 if (user != null)
                 {
                     SigningResult result = await codeGenerator.GenerateCode(user);
-                    
+
                     return result.ToString();
                 }
                 return SigningResult.EmailNotFound.ToString();
@@ -253,7 +282,7 @@ namespace FindProgrammingProject.Controllers
             }
         }
         [HttpGet]
-        [Route("singing/sendemailverificationcode")]
+        [Route("/getemailverificationcode")]
         public async Task<string> GetEmailVerificationCode(string Email)
         {
             try
@@ -263,7 +292,7 @@ namespace FindProgrammingProject.Controllers
                 if (user != null)
                 {
                     string result = await codeGenerator.GetCode(user);
-                    
+                    result = HttpUtility.UrlEncode(result);
                     return result;
                 }
                 return SigningResult.EmailNotFound.ToString();
@@ -275,8 +304,9 @@ namespace FindProgrammingProject.Controllers
                 return JsonSerializer.Serialize(ex);
             }
         }
+        
         [HttpGet]
-        [Route("singing/verifyemail")]
+        [Route("/verifyemail")]
         public async Task<string> VerifyEmail(string Email, string Token)
         {
             try
@@ -296,17 +326,13 @@ namespace FindProgrammingProject.Controllers
                 return JsonSerializer.Serialize(ex);
             }
         }       
-        //public IActionResult SendThirdPartySignIn(string provider)
-        //{
-        //    var options = signInManager.ConfigureExternalAuthenticationProperties(provider, "ThirdPartySignIn");
-        //    return Challenge(options, provider);
-        //}
         [HttpGet]
-        [Route("signing/thirdpartysignin")]
+        [Route("/thirdpartysignin")]
         public async Task<string> ThirdPartySignIn(string externalLoginInfo)
         {
             try
             {
+                externalLoginInfo = HttpUtility.UrlDecode(externalLoginInfo);
                 var result = JsonSerializer.Deserialize<ExternalLoginInfo>(externalLoginInfo);
                 var response = await signClass.ThirdPartySignIn(result);
                 return response;

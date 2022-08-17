@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using System.Web;
 
 namespace FindProgrammingProject.FunctionalClasses.SigningLogic
@@ -19,12 +20,13 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 
         public async Task<SigningResult> Verify(string Email, string Token)
         {
-            var decodedEmail = HttpUtility.UrlDecode(Email);
-            var decodedToken = HttpUtility.UrlDecode(Token);
 
-
-            var user = await userManager.FindByEmailAsync(decodedEmail);
-            bool response = await userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, UserManager<User>.ConfirmEmailTokenPurpose, decodedToken);
+            var user = await userManager.FindByEmailAsync(Email);
+            if(user == null)
+            {
+                return SigningResult.EmailNotFound;
+            }
+            bool response = await userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, UserManager<User>.ConfirmEmailTokenPurpose, Token);
             if(response == true)
             {
                 await userManager.ConfirmEmailAsync(user,Token);
@@ -48,12 +50,14 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         }
         public virtual async Task<SigningResult> Verify(string Email, string Token)
         {
-            var decodedEmail = HttpUtility.UrlDecode(Email);
-            var decodedToken = HttpUtility.UrlDecode(Token);
 
-            var user = await userManager.FindByEmailAsync(decodedEmail);
+            var user = await userManager.FindByEmailAsync(Email);
             
-            bool response = await userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, UserManager<User>.ResetPasswordTokenPurpose, decodedToken);
+            if(user == null)
+            {
+                return SigningResult.EmailNotFound;
+            }
+            bool response = await userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider, UserManager<User>.ResetPasswordTokenPurpose, Token);
             
             if(response == true)
             {
@@ -65,11 +69,34 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
     }
     public class AuthorizationTokenVerification : IVerification
     {
+        private IConfiguration config;
+        public AuthorizationTokenVerification(IConfiguration config)
+        {
+            this.config = config;
+        }
         public async Task<SigningResult> Verify(string Email, string Token)
         {
             SecurityToken token;
             
-            var response = new JwtSecurityTokenHandler().ValidateToken(Token,new TokenValidationParameters { ValidateLifetime = true}, out token);
+            var response = new JwtSecurityTokenHandler().ValidateToken(Token, new TokenValidationParameters
+
+            {
+
+                ValidateIssuer = true,
+
+                ValidateAudience = true,
+
+                ValidIssuer = "https://localhost:7168",
+
+                ValidAudience = "https://localhost:7168",
+
+                ValidateLifetime = true,
+
+                ValidateIssuerSigningKey = true,
+
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue<string>("IssuerSigningKey"))),
+
+            }, out token);
             if(response == null)
             {
                 return SigningResult.IncorrectToken;

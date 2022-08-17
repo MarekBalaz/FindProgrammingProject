@@ -1,4 +1,7 @@
-﻿namespace FindProgrammingProject.Models
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace FindProgrammingProject.Models
 {
     public interface IMessage
     {
@@ -12,6 +15,7 @@
 
     public class Message : IMessage
     {
+        [Key]
         private string id;
         private string personFromId;
         private string personToId;
@@ -26,4 +30,5 @@
         public DateTime Date { get => date; set => date = value; }
         public bool UnRead { get => unread; set => unread = value; }
     }
+    
 }
