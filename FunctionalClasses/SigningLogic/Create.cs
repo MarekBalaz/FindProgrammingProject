@@ -1,4 +1,4 @@
-﻿using FindProgrammingProject.Models;
+﻿using FindProgrammingProject.Models.ObjectModels;
 using Microsoft.AspNetCore.Identity;
 
 namespace FindProgrammingProject.FunctionalClasses.SigningLogic
@@ -16,20 +16,25 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         {
             User user = new User
             {
-                Id = Guid.NewGuid().ToString(),
                 Email = Email,
                 UserName = Nickname,
                 Description = "",
-                ProjectId = new List<string>(),
-                GroupId = new List<string>(),
-                MessageId = new List<string>(),
-                CommentId = new List<string>(),
                 ProgrammingLanguages = new List<string>(),
                 ProjectTypes = new List<string>(),
                 BannedUsers = new List<string>(),
-                WebSocketId = "",
-                Contacts = new List<string>(),
+                WebSocketId = ""
             };
+            var u1 = await userManager.FindByNameAsync(Nickname);
+            if(u1 != null)
+            {
+                return new User { UserName = "Exist" };
+            }
+            var u2 = await userManager.FindByEmailAsync(Email);
+            if(u2 != null)
+            {
+                return new User { Email = "Exist" };
+            }
+
             var result = await userManager.CreateAsync(user,Password);
             if(result.Succeeded)
             {

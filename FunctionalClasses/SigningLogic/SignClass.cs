@@ -1,4 +1,4 @@
-﻿using FindProgrammingProject.Models;
+﻿using FindProgrammingProject.Models.ObjectModels;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -18,6 +18,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         DataDidNotCome,
         IncorrectToken,
         CredentialsNotSet,
+        UserNameAlreadyRegistered,
         Error
     }
     public interface ISignClass
@@ -25,7 +26,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         Task<string> SignIn(string Email, string Password);
         //Task<SigningResult> SignOut();
         Task<SigningResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation);
-        Task<string> ThirdPartySignIn(ExternalLoginInfo result);
+        Task<string> ThirdPartySignIn(string LoginProvider, string ProviderKey, string Email, UserLoginInfo info);
     }
 
     public class SignClass : ISignClass
@@ -68,11 +69,6 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 return SigningResult.IncorrectPassword.ToString();
             } 
         }
-        //public async Task<SigningResult> SignOut()
-        //{
-        //    await signInManager.SignOutAsync();
-        //    return SigningResult.Success;
-        //}
         public async Task<SigningResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation)
         {
             if (Password == PasswordConfirmation)
@@ -85,7 +81,18 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                     //Here we will generate email confirmation code and send it to email
                     //We will need to set event in database to clear all unconfirmed accounts after 30 minutes
                     User user = await creation.Create(Email, Password, Nickname);
-
+                    if(user.UserName == "Exist" && user.Email == null)
+                    {
+                        return SigningResult.UserNameAlreadyRegistered;
+                    }
+                    else if(user.Email == "Exist" && user.UserName == null)
+                    {
+                        return SigningResult.UserNameAlreadyRegistered;
+                    }
+                    else if(user == null)
+                    {
+                        return SigningResult.Error;
+                    }
                     return await codeGenerator.GenerateCode(user);
                 }
                 else
@@ -100,33 +107,27 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             }
 
         }
-        public async Task<string> ThirdPartySignIn(ExternalLoginInfo result)
+        public async Task<string> ThirdPartySignIn(string LoginProvider, string ProviderKey, string Email, UserLoginInfo info)
         {
-            if (result == null)
+            if (ProviderKey == "")
             {
                 return SigningResult.DataDidNotCome.ToString();
             }
-            var loginResult = await signInManager.ExternalLoginSignInAsync(result.LoginProvider,result.ProviderKey,true,true);
-            if(loginResult.Succeeded)
+            var user = await userManager.FindByLoginAsync(LoginProvider, ProviderKey);
+            if (user != null)
             {
-                var email = result.Principal.Claims.First(x => x.Type == ClaimTypes.Email).Value;
-                var user = await userManager.FindByEmailAsync(email);
                 return jwtTokenGenerator.GetJwtToken(user);
             }
-            else if(loginResult.IsLockedOut)
-            {
-                return SigningResult.AccountLockedOut.ToString();
-            }
+            //var loginResult = await signInManager.ExternalLoginSignInAsync(LoginProvider,ProviderKey,true,true);
             else
             {
-                var email = result.Principal.Claims.First(x => x.Type == ClaimTypes.Email).Value;
-                var user = await userManager.FindByEmailAsync(email);
+                user = await userManager.FindByEmailAsync(Email);
                 if(user == null)
                 {
                     //create new user and add him external login and sign him in
-                    var newUser = new User { Email = email };
+                    var newUser = new User { Email = Email };
                     await userManager.CreateAsync(newUser);
-                    await userManager.AddLoginAsync(newUser, result);
+                    await userManager.AddLoginAsync(newUser, info);
                     newUser.EmailConfirmed = true;
                     await userManager.UpdateAsync(newUser);
                     return jwtTokenGenerator.GetJwtToken(newUser);
@@ -134,7 +135,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 else
                 {
                     //add user external login and sign him in
-                    await userManager.AddLoginAsync(user, result);
+                    await userManager.AddLoginAsync(user, info);
                     user.EmailConfirmed = true;
                     await userManager.UpdateAsync(user);
                     return jwtTokenGenerator.GetJwtToken(user);

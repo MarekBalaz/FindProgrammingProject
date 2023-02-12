@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace FindProgrammingProject.Models
+namespace FindProgrammingProject.Models.ObjectModels
 {
     public interface ILog
     {
@@ -27,5 +27,5 @@ namespace FindProgrammingProject.Models
         public string Level { get => level; set => level = value; }
         public DateTime Date { get => date; set => date = value; }
     }
-    
+
 }

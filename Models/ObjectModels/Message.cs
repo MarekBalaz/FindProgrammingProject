@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace FindProgrammingProject.Models
+namespace FindProgrammingProject.Models.ObjectModels
 {
     public interface IMessage
     {
@@ -30,5 +30,5 @@ namespace FindProgrammingProject.Models
         public DateTime Date { get => date; set => date = value; }
         public bool UnRead { get => unread; set => unread = value; }
     }
-    
+
 }

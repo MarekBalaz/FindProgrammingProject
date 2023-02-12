@@ -1,31 +1,33 @@
-using Elasticsearch.Net;
 using FindProgrammingProject.FunctionalClasses.SigningLogic;
-using FindProgrammingProject.Models;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using FindProgrammingProject.Models.DbContexts;
+using FindProgrammingProject.Models.ObjectModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Nest;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
-using System.Configuration;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-var reader = new AppSettingsReader();
-var appSettings = System.Configuration.ConfigurationManager.AppSettings;
+string fingerprint = builder.Configuration.GetValue<string>("ElasticCAFingerprint");
+string username = builder.Configuration.GetValue<string>("ElasticSearchAuthUserName");
+string password = builder.Configuration.GetValue<string>("ElasticSearchAuthPassword");
+string url = builder.Configuration.GetValue<string>("ElasticSearchUrl");
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 Serilog.Log.Logger = new LoggerConfiguration()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(builder.Configuration.GetValue<string>("ElasticSearchUri")))
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(url))
     {
-        IndexFormat = $"FindProgrammingProject-{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Replace(".","-")}-{DateTime.UtcNow:yyyy-MM}",
+        IndexFormat = $"FindProgrammingProject-AuthenticationServer-Logs-{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
         AutoRegisterTemplate = true,
+        ModifyConnectionSettings = x => x.CertificateFingerprint(fingerprint).BasicAuthentication(username, password),
         NumberOfReplicas = 1,
         NumberOfShards = 3,
-        ModifyConnectionSettings = x => x.BasicAuthentication(builder.Configuration.GetValue<string>("ElasticSearchUserName"), builder.Configuration.GetValue<string>("ElasticSearchUserPassword")),
+        OverwriteTemplate = true,
+        TemplateName = "LogsForFPP",
+        AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
+        TypeName = null,
+        BatchAction = ElasticOpType.Create
     }
     )
     .ReadFrom.Configuration(configuration)
@@ -47,8 +49,6 @@ builder.Services.AddAuthentication(x =>
 
     var Key = Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("IssuerSigningKey"));
 
-    o.SaveToken = true;
-
     o.TokenValidationParameters = new TokenValidationParameters
 
     {
@@ -57,9 +57,9 @@ builder.Services.AddAuthentication(x =>
 
         ValidateAudience = true,
 
-        ValidIssuer = "https://localhost:7168",
+        ValidIssuer = builder.Configuration.GetValue<string>("ValidJwtIssuer"),
 
-        ValidAudience = "https://localhost:7168",
+        ValidAudience = $"{builder.Configuration.GetValue<string>("ValidJwtAudience")}",
 
         ValidateLifetime = true,
 
@@ -70,14 +70,12 @@ builder.Services.AddAuthentication(x =>
     };
 
 });
-builder.Services.AddDbContext<UserContext>(x =>
-{
-    x.UseSqlServer(builder.Configuration.GetValue<string>("MSSQLConnectionString"));
-})
-.AddDbContext<FindProgrammingProject.Models.Context>(x =>
+
+builder.Services.AddDbContext<Context>(x =>
 {
     x.UseSqlServer(builder.Configuration.GetValue<string>("MSSQLConnectionString"));
 });
+
 builder.Services.AddIdentity<User, IdentityRole>(x =>
  {
      //x.SignIn.RequireConfirmedEmail = true;
@@ -87,7 +85,7 @@ builder.Services.AddIdentity<User, IdentityRole>(x =>
      x.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
      x.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
 
- }).AddEntityFrameworkStores<UserContext>().AddDefaultTokenProviders();
+ }).AddEntityFrameworkStores<Context>().AddDefaultTokenProviders();
 builder.Services.AddSingleton<IJwtTokenGenerator>(x => new JwtTokenGenerator());
 builder.Services.Configure<DataProtectionTokenProviderOptions>(x =>
 {

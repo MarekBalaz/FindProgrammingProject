@@ -1,10 +1,10 @@
-﻿using FindProgrammingProject.Models;
+﻿using FindProgrammingProject.Models.ObjectModels;
 using Microsoft.AspNetCore.Identity;
 using System.Web;
 
 namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 {
-    
+
     public class ResetPassword : IReset
     {
         private PasswordResetTokenVerifiction verification;

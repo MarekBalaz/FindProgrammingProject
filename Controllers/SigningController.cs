@@ -1,16 +1,16 @@
-
 using FindProgrammingProject.FunctionalClasses.SigningLogic;
-﻿using FindProgrammingProject.FunctionalClasses;
-using FindProgrammingProject.Models;
+using FindProgrammingProject.FunctionalClasses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Web;
+using FindProgrammingProject.Models.ObjectModels;
 
 namespace FindProgrammingProject.Controllers
 {
     [ApiController]
+    [Route("authentication")]
     public class SigningController : ControllerBase
     {
         private ISignClass signClass;
@@ -33,52 +33,69 @@ namespace FindProgrammingProject.Controllers
             this.configuration = configuration;
         }
         //This action will either sign in person or return sign in view
-        [HttpGet]
-        [Route("/signin")]
-        public async Task<string> SignIn(string Email = "", string Password = "")
+        [HttpPost]
+        [Route("signin")]
+        public async Task<string> SignIn([FromHeader]string Email, [FromHeader]string Password)
         {
             try
             {
-                Email = HttpUtility.UrlDecode(Email);
-                Password = HttpUtility.UrlDecode(Password);
+                string jsonResponse;
+                verification = new AuthorizationTokenVerification(configuration);
                 if (Email == "" && Password == "")
                 {
-                    return SigningResult.CredentialsNotSet.ToString();
+                    jsonResponse = $"{{\"Message\":\"{SigningResult.CredentialsNotSet}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
                 else
                 {
-                    return await signClass.SignIn(Email, Password);
+                    var response = await signClass.SignIn(Email, Password);
+                    if(response.Substring(0,2) != "ey")
+                    {
+                        jsonResponse = $"{{\"Message\":\"{response}\", \"Token\":\"false\"}}";
+                        return jsonResponse;
+                    }
+                    if(await verification.Verify(Email, response) == SigningResult.Success)
+                    {
+                        jsonResponse = $"{{\"Message\":\"{response}\", \"Token\":\"true\"}}";
+                        return jsonResponse;
+                    }
+                    jsonResponse = $"{{\"Message\":\"{response}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
             }
             catch (Exception ex)
             {
                 var jsonResponse = JsonSerializer.Serialize(ex);
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return jsonResponse;
             }
 
         }
         //This action will either sign up person or return sign up view
-        [HttpGet]
-        [Route("/signup")]
-        public async Task<string> SignUp(string Email = "", string Password = "", string PasswordConfirmation = "", string Nickname = "")
+        [HttpPost]
+        [Route("signup")]
+        public async Task<string> SignUp([FromHeader]string Email = "", [FromHeader] string Password = "", [FromHeader] string PasswordConfirmation = "", [FromHeader]string Nickname = "")
         {
             try
             {
+                verification = new AuthorizationTokenVerification(configuration);
+                string jsonResponse;
                 Email = HttpUtility.UrlDecode(Email);
                 Password = HttpUtility.UrlDecode(Password);
                 PasswordConfirmation = HttpUtility.UrlDecode(PasswordConfirmation);
                 Nickname = HttpUtility.UrlDecode(Nickname);
                 if (Email == "" || Password == "" || PasswordConfirmation == "" || Nickname == "")
                 {
-                    return SigningResult.CredentialsNotSet.ToString();
+                    jsonResponse = $"{{\"Message\":\"{SigningResult.CredentialsNotSet}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
                 var trimmedEmail = Email.Trim();
 
                 if (trimmedEmail.EndsWith("."))
                 {
-                    return SigningResult.EmailNotFound.ToString();
+                    jsonResponse = $"{{\"Message\":\"{SigningResult.EmailIncorrect}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
                 try
                 {
@@ -90,15 +107,23 @@ namespace FindProgrammingProject.Controllers
                 }
                 catch
                 {
-                    return @"{""Message"":""Email is invalid""}"; ;
+                    jsonResponse = $"{{\"Message\":\"{SigningResult.EmailIncorrect}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
                 SigningResult signUpResult = await signClass.SignUp(Email, Nickname, Password, PasswordConfirmation);
                 if (signUpResult == SigningResult.Success)
                 {
                     var result = await signClass.SignIn(Email, Password);
-                    return result;
+                    if(await verification.Verify(Email, result) == SigningResult.Success)
+                    {
+                        jsonResponse = $"{{\"Message\":\"{result}\", \"Token\":\"true\"}}";
+                        return jsonResponse;
+                    }
+                    jsonResponse = $"{{\"Message\":\"{result}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
-                return signUpResult.ToString();
+                jsonResponse = $"{{\"Message\":\"{signUpResult}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
@@ -108,13 +133,13 @@ namespace FindProgrammingProject.Controllers
                     await userManager.DeleteAsync(user);
                 }
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
         [HttpGet]
-        [Route("/getauthorizationtoken")]
-        public async Task<string> GetAuthorizationToken(string Email)
+        [Route("getauthorizationtoken")]
+        private async Task<string> GetAuthorizationToken(string Email)
         {
             try
             {
@@ -124,72 +149,81 @@ namespace FindProgrammingProject.Controllers
                 if (user != null)
                 {
                     string token = tokenGenerator.GetJwtToken(user);
-                    return token;
+                    string tokenResponse = $"{{\"Message\":\"{token}\", \"Token\":\"true\"}}";
+                    return tokenResponse;
                 }
-                return SigningResult.EmailNotFound.ToString();
+                string jsonResponse = $"{{\"Message\":\"{SigningResult.EmailNotFound}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
-        [HttpGet]
-        [Route("/verifyauthorizationtoken")]
-        public async Task<string> VerifyAuthorizationToken(string Email, string Token)
+        [HttpPost]
+        [Route("verifyauthorizationtoken")]
+        public async Task<string> VerifyAuthorizationToken([FromHeader] string Email, [FromHeader] string Token)
         {
             try
             {
                 Email = HttpUtility.UrlDecode(Email);
                 Token = HttpUtility.UrlDecode(Token);
+                string jsonResponse;
                 if (Email != "")
                 {
                     verification = new AuthorizationTokenVerification(configuration);
                     SigningResult result = await verification.Verify(Email, Token);
-
-                    return result.ToString();
+                    jsonResponse = $"{{\"Message\":\"{result}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
+                    
                 }
-                return SigningResult.EmailNotFound.ToString();
+                jsonResponse = $"{{\"Message\":\"{SigningResult.EmailNotFound}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
         [HttpGet]
-        [Route("/sendresetpasswordcode")]
+        [Route("sendresetpasswordcode")]
         public async Task<string> SendResetPasswordCode(string Email)
         {
             try
             {
                 Email = HttpUtility.UrlDecode(Email);
                 sender = new MailSender(configuration);
+                string jsonResponse;
                 codeGenerator = new PasswordResetCodeGenerator(userManager, sender);
                 var user = await userManager.FindByEmailAsync(Email);
                 if (user != null)
                 {
                     SigningResult result = await codeGenerator.GenerateCode(user);
 
-                    return result.ToString();
+                    jsonResponse = $"{{\"Message\":\"{result}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
-                return SigningResult.EmailNotFound.ToString();
+                jsonResponse = $"{{\"Message\":\"{SigningResult.EmailNotFound}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
         [HttpGet]
-        [Route("/getresetpasswordcode")]
-        public async Task<string> GetResetPasswordCode(string Email)
+        [Route("getresetpasswordcode")]
+        private async Task<string> GetResetPasswordCode(string Email)
         {
             try
             {
+                string jsonResponse;
                 Email = HttpUtility.UrlDecode(Email);
                 //sender = new MailSender(configuration);
                 codeGenerator = new PasswordResetCodeGenerator(userManager, null);
@@ -198,70 +232,79 @@ namespace FindProgrammingProject.Controllers
                 {
                     string result = await codeGenerator.GetCode(user);
 
-                    return result;
+                    jsonResponse = $"{{\"Message\":\"{result}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
-                return SigningResult.EmailNotFound.ToString();
+                jsonResponse = $"{{\"Message\":\"{SigningResult.EmailNotFound}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
-        [HttpGet]
-        [Route("/verifyresetpasswordtoken")]
-        public async Task<string> VerifyResetPasswordToken(string email = "", string token = "")
+        [HttpPost]
+        [Route("verifyresetpasswordtoken")]
+        public async Task<string> VerifyResetPasswordToken([FromHeader] string Email = "", [FromHeader] string Token = "")
         {
             try
             {
-
-                if (email == "" || token == "")
+                string jsonResponse;
+                if (Email == "" || Token == "")
                 {
-                    return SigningResult.CredentialsNotSet.ToString();
+                    jsonResponse = $"{{\"Message\":\"{SigningResult.CredentialsNotSet}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
                 verification = new PasswordResetTokenVerifiction(userManager);
-                SigningResult result = await verification.Verify(email, token);
+                SigningResult result = await verification.Verify(Email, Token);
                 if (result == SigningResult.Success)
                 {
-                    return SigningResult.Success.ToString();
+                    jsonResponse = $"{{\"Message\":\"{SigningResult.Success}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
-                return SigningResult.IncorrectToken.ToString();
+                jsonResponse = $"{{\"Message\":\"{SigningResult.IncorrectToken}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
-        [HttpGet]
-        [Route("/setnewpassword")]
-        public async Task<string> SetNewPassword(string newPassword, string newPasswordRepeated, string token, string email)
+        [HttpPost]
+        [Route("setnewpassword")]
+        public async Task<string> SetNewPassword([FromHeader] string NewPassword, [FromHeader] string NewPasswordConfirmed, [FromHeader] string Token, [FromHeader] string Email)
         {
             try
             {
-                if (newPassword == "" || newPasswordRepeated == "" || token == "" || email == "")
+                string jsonResponse;
+                if (NewPassword == "" || NewPasswordConfirmed == "" || Token == "" || Email == "")
                 {
-                    return SigningResult.CredentialsNotSet.ToString();
+                    jsonResponse = $"{{\"Message\":\"{SigningResult.CredentialsNotSet}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
                 reset = new ResetPassword(userManager, new PasswordResetTokenVerifiction(userManager));
-                var result = await reset.Reset(newPassword, newPasswordRepeated, token, email);
-                return result.ToString();
+                var result = await reset.Reset(NewPassword, NewPasswordConfirmed, Token, Email);
+                jsonResponse = $"{{\"Message\":\"{result}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
         [HttpGet]
-        [Route("/sendemailverificationcode")]
+        [Route("sendemailverificationcode")]
         public async Task<string> SendEmailVerificationCode(string Email)
         {
             try
             {
+                string jsonResponse;
                 Email = HttpUtility.UrlDecode(Email);
                 sender = new MailSender(configuration);
                 codeGenerator = new EmailVerificationCodeGenerator(userManager, sender);
@@ -270,77 +313,92 @@ namespace FindProgrammingProject.Controllers
                 {
                     SigningResult result = await codeGenerator.GenerateCode(user);
 
-                    return result.ToString();
+                    jsonResponse = $"{{\"Message\":\"{result}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
-                return SigningResult.EmailNotFound.ToString();
+                jsonResponse = $"{{\"Message\":\"{SigningResult.EmailNotFound}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
         [HttpGet]
-        [Route("/getemailverificationcode")]
-        public async Task<string> GetEmailVerificationCode(string Email)
+        [Route("getemailverificationcode")]
+        private async Task<string> GetEmailVerificationCode(string Email)
         {
             try
             {
+                string jsonResponse;
                 codeGenerator = new EmailVerificationCodeGenerator(userManager, null);
                 var user = await userManager.FindByEmailAsync(Email);
                 if (user != null)
                 {
                     string result = await codeGenerator.GetCode(user);
                     result = HttpUtility.UrlEncode(result);
-                    return result;
+                    jsonResponse = $"{{\"Message\":\"{result}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
-                return SigningResult.EmailNotFound.ToString();
+                jsonResponse = $"{{\"Message\":\"{SigningResult.EmailNotFound}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
         
-        [HttpGet]
-        [Route("/verifyemail")]
-        public async Task<string> VerifyEmail(string Email, string Token)
+        [HttpPost]
+        [Route("verifyemail")]
+        public async Task<string> VerifyEmail([FromHeader] string Email, [FromHeader] string Token)
         {
             try
             {
+                string jsonResponse;
                 if(Email == "" || Token == "")
                 {
-                    return SigningResult.CredentialsNotSet.ToString();
+                    jsonResponse = $"{{\"Message\":\"{SigningResult.CredentialsNotSet}\", \"Token\":\"false\"}}";
+                    return jsonResponse;
                 }
                 verification = new EmailTokenVerification(userManager, signInManager);
                 SigningResult result = await verification.Verify(Email, Token);
-                return result.ToString();
+                jsonResponse = $"{{\"Message\":\"{result}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }       
-        [HttpGet]
-        [Route("/thirdpartysignin")]
-        public async Task<string> ThirdPartySignIn(string externalLoginInfo)
+        [HttpPost]
+        [Route("thirdpartysignin")]
+        public async Task<string> ThirdPartySignIn([FromHeader] string LoginProvider, [FromHeader] string ProviderKey, [FromHeader] string Email, [FromHeader] string ProviderDisplayName)
         {
             try
             {
-                externalLoginInfo = HttpUtility.UrlDecode(externalLoginInfo);
-                var result = JsonSerializer.Deserialize<ExternalLoginInfo>(externalLoginInfo);
-                var response = await signClass.ThirdPartySignIn(result);
-                return response;
+                verification = new AuthorizationTokenVerification(configuration);
+                UserLoginInfo lg = new UserLoginInfo(LoginProvider,ProviderKey, ProviderDisplayName);
+                string jsonResponse;
+                var response = await signClass.ThirdPartySignIn(LoginProvider, ProviderKey, Email, lg);
+                if(await verification.Verify(Email, response) == SigningResult.Success)
+                {
+                    jsonResponse = $"{{\"Message\":\"{response}\", \"Token\":\"true\"}}";
+                    return jsonResponse;
+                }
+                jsonResponse = $"{{\"Message\":\"{response}\", \"Token\":\"false\"}}";
+                return jsonResponse;
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, null);
+                logger.Log(LogLevel.Error, ex, ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }

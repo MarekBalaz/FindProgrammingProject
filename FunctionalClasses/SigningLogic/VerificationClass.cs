@@ -1,4 +1,4 @@
-﻿using FindProgrammingProject.Models;
+﻿using FindProgrammingProject.Models.ObjectModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -86,9 +86,9 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 
                 ValidateAudience = true,
 
-                ValidIssuer = "https://localhost:7168",
+                ValidIssuer = "https://localhost:7137",
 
-                ValidAudience = "https://localhost:7168",
+                ValidAudience = "https://localhost:7137",
 
                 ValidateLifetime = true,
 

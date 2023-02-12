@@ -1,4 +1,4 @@
-﻿using FindProgrammingProject.Models;
+﻿using FindProgrammingProject.Models.ObjectModels;
 using Microsoft.AspNetCore.Identity;
 using System.Net;
 using System.Net.Mail;
