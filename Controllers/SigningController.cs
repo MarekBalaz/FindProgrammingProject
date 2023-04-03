@@ -110,6 +110,7 @@ namespace FindProgrammingProject.Controllers
                     jsonResponse = $"{{\"Message\":\"{SigningResult.EmailIncorrect}\", \"Token\":\"false\"}}";
                     return jsonResponse;
                 }
+
                 SigningResult signUpResult = await signClass.SignUp(Email, Nickname, Password, PasswordConfirmation);
                 if (signUpResult == SigningResult.Success)
                 {

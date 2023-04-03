@@ -42,7 +42,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             }
             else
             {
-                return null;
+                return new User { UserName = result.Errors.ToList()[0].Description };
             }
         }
     }

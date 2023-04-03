@@ -16,19 +16,20 @@ namespace FindProgrammingProject.Models.ObjectModels
         }
 
         public string Id { get; set; } = null!;
+        public byte[] Picture { get; set; }
         public string Title { get; set; } = null!;
         public string Description { get; set; } = null!;
         public bool Started { get; set; }
+        public bool Finished { get; set; }
         public bool Group { get; set; }
-        public string? CreatorId { get; set; }
+        public string CreatorId { get; set; }
         public List<PeopleNeededToLanguage> PeopleNeededToLanguage { get; set; } = null!;
-        public bool Paid { get; set; }
         public int MinimalExperience { get; set; }
         public string ProjectType { get; set; } = null!;
         public DateTime DateOfCreation { get; set; }
         public string? GroupId { get; set; }
 
-        public virtual User? Creator { get; set; }
+        public virtual User Creator { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<GroupProject> GroupProjects { get; set; }
         public virtual ICollection<Invite> Invites { get; set; }

@@ -19,6 +19,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         IncorrectToken,
         CredentialsNotSet,
         UserNameAlreadyRegistered,
+        PasswordDoesNotFollowRules,
         Error
     }
     public interface ISignClass
@@ -81,6 +82,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                     //Here we will generate email confirmation code and send it to email
                     //We will need to set event in database to clear all unconfirmed accounts after 30 minutes
                     User user = await creation.Create(Email, Password, Nickname);
+                    
                     if(user.UserName == "Exist" && user.Email == null)
                     {
                         return SigningResult.UserNameAlreadyRegistered;
@@ -89,9 +91,9 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                     {
                         return SigningResult.UserNameAlreadyRegistered;
                     }
-                    else if(user == null)
+                    else if(user.UserName != Nickname)
                     {
-                        return SigningResult.Error;
+                        return SigningResult.PasswordDoesNotFollowRules;
                     }
                     return await codeGenerator.GenerateCode(user);
                 }
