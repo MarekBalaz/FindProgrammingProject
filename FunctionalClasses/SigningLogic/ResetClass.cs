@@ -15,25 +15,23 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             this.verification = verification;
 
         }
-        public async Task<SigningResult> Reset(string newPassword, string newPasswordRepeated, string token, string email)
+        public async Task<SigningResult> Reset(string newPassword, string token, string email)
         {
-            if(newPassword == newPasswordRepeated)
+            User user = await userManager.FindByEmailAsync(email);
+            IdentityResult resetResult = await userManager.ResetPasswordAsync(user,token,newPassword);
+            if(resetResult.Succeeded == true)
             {
-                User user = await userManager.FindByEmailAsync(email);
-                IdentityResult resetResult = await userManager.ResetPasswordAsync(user,token,newPassword);
-                if(resetResult.Succeeded == true)
-                {
-                    return SigningResult.Success;
-                }
-                
-                return SigningResult.IncorrectToken;
+                return SigningResult.Success;
             }
+                
+            return SigningResult.IncorrectToken;
+            
             return SigningResult.PasswordsDoNotMatch;
         }
     }
     public interface IReset
     {
-        public Task<SigningResult> Reset(string newPassword, string newPasswordRepeated, string token, string email);
+        public Task<SigningResult> Reset(string newPassword, string token, string email);
     }
     
 }

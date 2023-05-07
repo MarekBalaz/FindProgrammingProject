@@ -78,7 +78,6 @@ builder.Services.AddDbContext<Context>(x =>
 
 builder.Services.AddIdentity<User, IdentityRole>(x =>
  {
-     //x.SignIn.RequireConfirmedEmail = true;
      x.User.RequireUniqueEmail = true;
      x.Password.RequireNonAlphanumeric = false;
      x.Password.RequiredLength = 8;

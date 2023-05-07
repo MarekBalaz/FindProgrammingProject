@@ -20,13 +20,14 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         CredentialsNotSet,
         UserNameAlreadyRegistered,
         PasswordDoesNotFollowRules,
+        InvalidAccessTokenOrRefreshToken,
         Error
     }
     public interface ISignClass
     {
         Task<string> SignIn(string Email, string Password);
         //Task<SigningResult> SignOut();
-        Task<SigningResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation);
+        Task<SigningResult> SignUp(string Email, string Nickname, string Password);
         Task<string> ThirdPartySignIn(string LoginProvider, string ProviderKey, string Email, UserLoginInfo info);
     }
 
@@ -52,6 +53,10 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             {
                 return SigningResult.EmailNotFound.ToString();
             }
+            if(user.EmailConfirmed == false)
+            {
+                return SigningResult.EmailNotVerified.ToString();
+            }
             var result = await userManager.CheckPasswordAsync(user, Password);  
             if (result)
             {
@@ -59,6 +64,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             }
             else
             {
+
                 if(user.EmailConfirmed == false)
                 {
                     return SigningResult.EmailNotVerified.ToString();
@@ -70,12 +76,9 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 return SigningResult.IncorrectPassword.ToString();
             } 
         }
-        public async Task<SigningResult> SignUp(string Email, string Nickname, string Password, string PasswordConfirmation)
+        public async Task<SigningResult> SignUp(string Email, string Nickname, string Password)
         {
-            if (Password == PasswordConfirmation)
-            {
-                
-                var result = await userManager.FindByEmailAsync(Email);
+            var result = await userManager.FindByEmailAsync(Email);
                 
                 if (result == null)
                 {
@@ -84,10 +87,6 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                     User user = await creation.Create(Email, Password, Nickname);
                     
                     if(user.UserName == "Exist" && user.Email == null)
-                    {
-                        return SigningResult.UserNameAlreadyRegistered;
-                    }
-                    else if(user.Email == "Exist" && user.UserName == null)
                     {
                         return SigningResult.UserNameAlreadyRegistered;
                     }
@@ -102,11 +101,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                     //Here we will return email already exist
                     return SigningResult.EmailIsAlreadyRegistered;
                 }
-            }
-            else
-            {
-                return SigningResult.PasswordsDoNotMatch;
-            }
+            
 
         }
         public async Task<string> ThirdPartySignIn(string LoginProvider, string ProviderKey, string Email, UserLoginInfo info)

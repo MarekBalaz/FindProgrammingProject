@@ -21,7 +21,6 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 Description = "",
                 ProgrammingLanguages = new List<string>(),
                 ProjectTypes = new List<string>(),
-                BannedUsers = new List<string>(),
                 WebSocketId = ""
             };
             var u1 = await userManager.FindByNameAsync(Nickname);
@@ -29,12 +28,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             {
                 return new User { UserName = "Exist" };
             }
-            var u2 = await userManager.FindByEmailAsync(Email);
-            if(u2 != null)
-            {
-                return new User { Email = "Exist" };
-            }
-
+            
             var result = await userManager.CreateAsync(user,Password);
             if(result.Succeeded)
             {

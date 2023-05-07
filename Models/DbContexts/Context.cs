@@ -43,7 +43,6 @@ namespace FindProgrammingProject.Models.DbContexts
 
             modelBuilder.Entity<User>().Property(x => x.ProgrammingLanguages).HasConversion(converter);
             modelBuilder.Entity<User>().Property(x => x.ProjectTypes).HasConversion(converter);
-            modelBuilder.Entity<User>().Property(x => x.BannedUsers).HasConversion(converter);
             modelBuilder.Entity<Project>().Property(x => x.PeopleNeededToLanguage).HasConversion(PeopleNeededToLanguageConverter);
 
 

@@ -21,7 +21,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 
                 new Claim("aud", "https://localhost:7137"),
 
-                new Claim("aud", "https://localhost:7138")
+                new Claim("aud", "https://localhost:56667")
 
             };
 
@@ -31,13 +31,19 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
 
-            var tokenDescriptor = new JwtSecurityToken(issuer: "https://localhost:7137", audience: null, claims: claims, expires: DateTime.Now.AddDays(1), signingCredentials: credentials);
+            var tokenDescriptor = new JwtSecurityToken(issuer: "https://localhost:7137", audience: null, claims: claims, expires: DateTime.Now.AddMinutes(10), signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+        }
+
+        public string RefreshTokenGenerator()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
     public interface IJwtTokenGenerator
     {
         string GetJwtToken(User user);
+        string RefreshTokenGenerator();
     }
 }

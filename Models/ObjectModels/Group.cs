@@ -15,6 +15,7 @@ namespace FindProgrammingProject.Models.ObjectModels
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         public byte[]? ProfilePhoto { get; set; }
+        public string PictureFormat { get; set; }
         public string? CreatorId { get; set; }
         public virtual User? Creator { get; set; }
         public virtual ICollection<GroupProject> GroupProjects { get; set; }

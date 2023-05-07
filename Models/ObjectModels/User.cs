@@ -4,7 +4,9 @@ namespace FindProgrammingProject.Models.ObjectModels
 {
     public class User : IdentityUser
     {
-        public byte[]? ProfilePicture { get; set; }
+
+		public byte[]? ProfilePicture { get; set; }
+        public string? PictureFormat { get; set; }
 
         public string Description { get; set; } = null!;
 
@@ -12,9 +14,9 @@ namespace FindProgrammingProject.Models.ObjectModels
 
         public List<string> ProjectTypes { get; set; } = null!;
 
-        public List<string> BannedUsers { get; set; } = null!;
-
         public string WebSocketId { get; set; } = null!;
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
 
         public virtual ICollection<CommentUpvote> CommentUpvotes { get; } = new List<CommentUpvote>();
 

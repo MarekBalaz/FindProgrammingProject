@@ -17,10 +17,9 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         }
         public async Task<SigningResult> GenerateCode(User user)
         {
-            var encodedToken = HttpUtility.UrlEncode(await userManager.GeneratePasswordResetTokenAsync(user));
-            var encodedEmail = HttpUtility.UrlEncode(user.Email);
+            var Token = await userManager.GeneratePasswordResetTokenAsync(user);
 
-            SigningResult result = await sender.SendCode(encodedEmail,encodedToken);
+            SigningResult result = await sender.SendCode(user.Email, Token, true);
             return result;
 
         }
@@ -43,10 +42,9 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         {
             try
             {
-                var EncodedToken = HttpUtility.UrlEncode(await userManager.GenerateEmailConfirmationTokenAsync(user));
-                var EncodedEmail = HttpUtility.UrlEncode(user.Email);
+                var Token = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                SigningResult result = await sender.SendCode(EncodedEmail, EncodedToken);
+                SigningResult result = await sender.SendCode(user.Email, Token, false);
                 return result;
 
             }

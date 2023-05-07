@@ -782,3 +782,8 @@ C:\Users\marek\source\repos\FindProgrammingProject - User Authentication\FindPro
 C:\Users\marek\source\repos\FindProgrammingProject - User Authentication\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.pdb
 C:\Users\marek\source\repos\FindProgrammingProject - User Authentication\FindProgrammingProject\obj\Debug\net6.0\FindProgrammingProject.genruntimeconfig.cache
 C:\Users\marek\source\repos\FindProgrammingProject - User Authentication\FindProgrammingProject\obj\Debug\net6.0\ref\FindProgrammingProject.dll
+C:\Users\marek\source\repos\FindProgrammingProject - User Authentication\FindProgrammingProject\obj\Debug\net6.0\staticwebassets\msbuild.FindProgrammingProject.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\marek\source\repos\FindProgrammingProject - User Authentication\FindProgrammingProject\obj\Debug\net6.0\staticwebassets\msbuild.build.FindProgrammingProject.props
+C:\Users\marek\source\repos\FindProgrammingProject - User Authentication\FindProgrammingProject\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.FindProgrammingProject.props
+C:\Users\marek\source\repos\FindProgrammingProject - User Authentication\FindProgrammingProject\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.FindProgrammingProject.props
+C:\Users\marek\source\repos\FindProgrammingProject - User Authentication\FindProgrammingProject\obj\Debug\net6.0\staticwebassets.pack.json
