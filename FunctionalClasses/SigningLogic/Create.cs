@@ -14,15 +14,25 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 
         public async Task<User> Create(string Email, string Password, string Nickname)
         {
-            User user = new User
+			User user = new User
+			{
+				Email = Email,
+				UserName = Nickname,
+				Description = "",
+				ProgrammingLanguages = new List<string>(),
+				ProjectTypes = new List<string>(),
+				WebSocketId = "",
+				ProfilePicture = null,
+				PictureFormat = "png"
+			};
+			var fs = new FileStream("C:/Users/marek/source/repos/FindProgrammingProject - User Authentication/FindProgrammingProject/Pictures/BasicProfilePicture.png", FileMode.Open, FileAccess.Read);
+            using (var stream = new MemoryStream())
             {
-                Email = Email,
-                UserName = Nickname,
-                Description = "",
-                ProgrammingLanguages = new List<string>(),
-                ProjectTypes = new List<string>(),
-                WebSocketId = ""
-            };
+                fs.CopyTo(stream);
+                user.ProfilePicture = stream.ToArray();
+			}
+                
+            
             var u1 = await userManager.FindByNameAsync(Nickname);
             if(u1 != null)
             {

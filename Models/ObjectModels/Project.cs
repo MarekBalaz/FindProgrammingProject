@@ -16,7 +16,8 @@ namespace FindProgrammingProject.Models.ObjectModels
         }
 
         public string Id { get; set; } = null!;
-        public byte[] Picture { get; set; }
+		public string IdKeyword { get; set; }
+		public byte[] Picture { get; set; }
         public string PictureFormat { get; set; }
         public string Title { get; set; } = null!;
         public string Description { get; set; } = null!;
