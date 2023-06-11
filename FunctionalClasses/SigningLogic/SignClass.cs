@@ -57,7 +57,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             {
                 return SigningResult.EmailNotVerified.ToString();
             }
-            var result = await userManager.CheckPasswordAsync(user, Password);  
+            var result = await userManager.CheckPasswordAsync(user, Password);
             if (result)
             {
                 return jwtTokenGenerator.GetJwtToken(user);
@@ -73,6 +73,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 {
                     return SigningResult.AccountLockedOut.ToString();
                 }
+                await userManager.AccessFailedAsync(user);
                 return SigningResult.IncorrectPassword.ToString();
             } 
         }

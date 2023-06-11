@@ -59,7 +59,8 @@ namespace FindProgrammingProject.Controllers
                         jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{response}\", \"Exception\":false}}";
                         return jsonResponse;
                     }
-                    if(await verification.Verify(Email, response) == SigningResult.Success)
+                    var verificatinoResponse = await verification.Verify(Email, response);
+					if (verificatinoResponse == SigningResult.Success)
                     {
                         var user = await userManager.FindByEmailAsync(Email);
                         var refreshToken = jwtTokenGenerator.RefreshTokenGenerator();
@@ -69,15 +70,22 @@ namespace FindProgrammingProject.Controllers
                         jsonResponse = $"{{\"Success\":true, \"Token\":\"{response}\", \"RefreshToken\":\"{refreshToken}\", \"ErrorMessage\":\"{SigningResult.Success}\", \"Exception\":false}}";
                         return jsonResponse;
                     }
-                    jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{response}\", \"Exception\":false}}";
-                    return jsonResponse;
-                }
+                    else if(verificatinoResponse == SigningResult.AccountLockedOut)
+                    {
+						logger.LogWarning($"Failed loggin with account locked out on account with Email: {Email}");
+						jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{response}\", \"Exception\":false}}";
+						return jsonResponse;
+					}
+					logger.LogWarning($"Failed loggin on account with Email: {Email}");
+					jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{response}\", \"Exception\":false}}";
+					return jsonResponse;
+				}
             }
             catch (Exception ex)
             {
                 var jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{ex.Message}\", \"Exception\":true}}";
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace) + ex.Message);
                 return jsonResponse;
             }
 
@@ -112,7 +120,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
                 jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{ex.Message}\", \"Exception\":true}}";
                 return jsonResponse;
             }
@@ -180,7 +188,7 @@ namespace FindProgrammingProject.Controllers
             catch(Exception ex)
             {
 				Response.StatusCode = 500;
-				logger.Log(LogLevel.Error, ex, ex.Message);
+				logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
 				jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{ex.Message}\", \"Exception\":true}}";
 				return jsonResponse;
 			}
@@ -206,7 +214,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
@@ -233,7 +241,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
@@ -265,7 +273,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message); 
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message); 
                 jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{ex.Message}\", \"Exception\":true}}";
                 return jsonResponse;
             }
@@ -294,7 +302,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
@@ -323,7 +331,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
 				jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{ex.Message}\", \"Exception\":true}}";
 				return jsonResponse;
 			}
@@ -353,7 +361,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
 				jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{ex.Message}\", \"Exception\":true}}";
 				return jsonResponse;
 			}
@@ -382,7 +390,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
@@ -408,7 +416,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }
@@ -439,7 +447,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
 				jsonResponse = $"{{\"Success\":false, \"Token\":\"\", \"RefreshToken\":\"\", \"ErrorMessage\":\"{ex.Message}\", \"Exception\":true}}";
 				return jsonResponse;
 			}
@@ -465,7 +473,7 @@ namespace FindProgrammingProject.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                logger.Log(LogLevel.Error, ex, ex.Message);
+                logger.LogError(JsonSerializer.Serialize(ex.StackTrace)+ ex.Message);
                 return JsonSerializer.Serialize(ex);
             }
         }

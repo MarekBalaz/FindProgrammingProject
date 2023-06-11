@@ -83,6 +83,8 @@ builder.Services.AddIdentity<User, IdentityRole>(x =>
      x.Password.RequiredLength = 8;
      x.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
      x.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+     x.Lockout.MaxFailedAccessAttempts = 5;
+     x.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 
  }).AddEntityFrameworkStores<Context>().AddDefaultTokenProviders();
 builder.Services.AddSingleton<IJwtTokenGenerator>(x => new JwtTokenGenerator());
