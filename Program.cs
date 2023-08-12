@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
+using Stripe;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -96,6 +97,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+StripeConfiguration.ApiKey = app.Configuration.GetValue<string>("StripeSecretKey");
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

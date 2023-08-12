@@ -1,4 +1,5 @@
-﻿using FindProgrammingProject.Models.ObjectModels;
+﻿using FindProgrammingProject.Models.DbContexts;
+using FindProgrammingProject.Models.ObjectModels;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -38,12 +39,12 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
         private ICodeGenerator codeGenerator;
         private ICreation creation;
         private IJwtTokenGenerator jwtTokenGenerator;
-        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, IJwtTokenGenerator jwtTokenGenerator, IConfiguration configuration)
+        public SignClass(UserManager<User> _userManager, SignInManager<User> _signInManager, IJwtTokenGenerator jwtTokenGenerator, IConfiguration configuration, Context context)
         {
             userManager = _userManager;
             signInManager = _signInManager;
             codeGenerator = new EmailVerificationCodeGenerator(_userManager, new MailSender(configuration));
-            creation = new Creation(_userManager);
+            creation = new Creation(_userManager, context);
             this.jwtTokenGenerator = jwtTokenGenerator;
         }
         public async Task<string> SignIn(string Email, string Password)
@@ -91,6 +92,10 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                     {
                         return SigningResult.UserNameAlreadyRegistered;
                     }
+                    else if(user.UserName == "Error")
+                    {
+					    return SigningResult.Error;
+				    }
                     else if(user.UserName != Nickname)
                     {
                         return SigningResult.PasswordDoesNotFollowRules;

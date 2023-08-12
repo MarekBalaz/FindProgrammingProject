@@ -9,6 +9,7 @@ namespace FindProgrammingProject.Models.ObjectModels
         public string? PictureFormat { get; set; }
 
         public string Description { get; set; } = null!;
+        public string StripeId { get; set; } = null!;
 
         public List<string> ProgrammingLanguages { get; set; } = null!;
 
@@ -17,8 +18,10 @@ namespace FindProgrammingProject.Models.ObjectModels
         public string WebSocketId { get; set; } = null!;
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
+		public string AffiliateCode { get; set; }
+		public DateTime DateOfCreation { get; set; }
 
-        public virtual ICollection<CommentUpvote> CommentUpvotes { get; } = new List<CommentUpvote>();
+		public virtual ICollection<CommentUpvote> CommentUpvotes { get; } = new List<CommentUpvote>();
 
         public virtual ICollection<Comment> Comments { get; } = new List<Comment>();
 

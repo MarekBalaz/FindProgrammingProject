@@ -29,8 +29,9 @@ namespace FindProgrammingProject.Models.DbContexts
         public virtual DbSet<ProjectUpvote> ProjectUpvotes { get; set; } = null!;
         public virtual DbSet<UserGroup> UserGroups { get; set; } = null!;
         public virtual DbSet<UserProject> UserProjects { get; set; } = null!;
+		public virtual DbSet<UserPlan> UserPlans { get; set; } = null!;
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -184,7 +185,19 @@ namespace FindProgrammingProject.Models.DbContexts
                     .HasForeignKey(d => d.UserId);
             });
 
-            OnModelCreatingPartial(modelBuilder);
+			modelBuilder.Entity<UserPlan>(entity =>
+			{
+				entity.ToTable("UserPlan");
+
+				entity.HasIndex(e => e.UserId, "IX_UserPlan_UserId")
+					.IsUnique();
+
+				entity.HasOne<User>()
+					.WithOne()
+					.HasForeignKey<UserPlan>(d => d.UserId);
+			});
+
+			OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

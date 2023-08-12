@@ -23,7 +23,9 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 
 				new Claim("aud", "https://localhost:7001"),
 
-				new Claim("aud", "https://localhost:56667")
+				new Claim("aud", "https://localhost:56667"),
+
+                new Claim("aud", "https://localhost:7079")
 
             };
 

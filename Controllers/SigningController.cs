@@ -9,6 +9,7 @@ using FindProgrammingProject.Models.ObjectModels;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using FindProgrammingProject.Models.DbContexts;
 
 namespace FindProgrammingProject.Controllers
 {
@@ -28,9 +29,9 @@ namespace FindProgrammingProject.Controllers
         private ICreation creation;
         private IJwtTokenGenerator jwtTokenGenerator;
         public SigningController(UserManager<User> userManager,
-            SignInManager<User> signInManager, ILogger<SigningController> logger, IConfiguration configuration, IJwtTokenGenerator jwtTokenGenerator)
+            SignInManager<User> signInManager, ILogger<SigningController> logger, IConfiguration configuration, IJwtTokenGenerator jwtTokenGenerator, Context context)
         {
-            this.signClass = new SignClass(userManager, signInManager, jwtTokenGenerator, configuration);
+            this.signClass = new SignClass(userManager, signInManager, jwtTokenGenerator, configuration, context);
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
