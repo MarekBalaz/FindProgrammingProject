@@ -10,10 +10,12 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
     {
         private UserManager<User> userManager;
         private Context context;
-        public Creation(UserManager<User> userManager, Context context)
+        private IConfiguration configuration;
+        public Creation(UserManager<User> userManager, Context context, IConfiguration configuration)
         {
             this.userManager = userManager;
             this.context = context;
+            this.configuration = configuration;
         }
 
         public async Task<User> Create(string Email, string Password, string Nickname)
@@ -23,7 +25,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 			{
 				return new User { UserName = "Exist" };
 			}
-            var random = new Random();
+			var random = new Random();
             string affiliateCode = "";
             string alphabet = "abcdefghijklmnopqrstuvwxyz";
             do
@@ -72,6 +74,30 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 Currency = "EUR"
 			};
 			var couponService = new CouponService();
+			couponService.Create(couponOptions);
+
+			couponOptions = new CouponCreateOptions
+			{
+				Duration = "once",
+				Id = Nickname + "50",
+				PercentOff = 50.0m,
+				Currency = "EUR",
+                MaxRedemptions = 1,
+				RedeemBy = DateTime.Now.AddHours(12),
+				AppliesTo = new CouponAppliesToOptions { Products = new List<string> { configuration.GetValue<string>("prod_OQPkUBHKB3FQuA"), configuration.GetValue<string>("prod_OQPl0FjJFxzVde") } }
+			};
+			couponService.Create(couponOptions);
+
+            couponOptions = new CouponCreateOptions
+            {
+                Duration = "once",
+                Id = Nickname + "30",
+                PercentOff = 30.0m,
+                Currency = "EUR",
+                MaxRedemptions = 1,
+                RedeemBy = DateTime.Now.AddHours(12),
+                AppliesTo = new CouponAppliesToOptions { Products = new List<string> { configuration.GetValue<string>("prod_ORBUCKdDzqoVGb"), configuration.GetValue<string>("prod_ORBV3dB5nT9818") } }
+			};
 			couponService.Create(couponOptions);
 
 

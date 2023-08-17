@@ -27,12 +27,14 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             string message1 = "";
             string message2 = "";
             string message3 = "";
+            string subject = "";
             if(IsPasswordResetToken == true)
             {
                 url = $"https://localhost:7047/SignIn/VerifyPasswordResetCode/?Email={Email}&Token={Token}";
                 message1 = "You are receiving this email because we received a password reset request for your account. To proceed with the password reset please click on the button below:";
                 message2 = "This password reset link will expire in 15 minutes. If you did not request a password reset, no further action is required.";
                 message3 = "Reset Password";
+                subject = "Password Reset for DevBud";
             }
             else
             {
@@ -40,7 +42,9 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 message1 = "To activate your account, please click on the button below to verify your email address. Once activated, you’ll have access to our products.";
                 message2 = "This email verification link will expire in 15 minutes. If you did not request a password reset, no further action is required.";
                 message3 = "Activate Account";
-            }
+                subject = "Email Verification for DevBud";
+
+			}
             string htmlContent = @$"<style>html,body {{ padding: 0; margin:0; }}</style>
                                     <div style=""font-family:Arial,Helvetica,sans-serif; line-height: 1.5; font-weight: normal; font-size: 15px; color: #2F3044; min-height: 100%; margin:0; padding:0; width:100%; background-color:#edf2f7"">
 	                                    <table align=""center"" border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" style=""border-collapse:collapse;margin:0 auto; padding:0; max-width:600px"">
@@ -88,7 +92,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 
             string decodedEmail = HttpUtility.UrlDecode(Email);
             MailMessage mailMessage = new MailMessage();
-            mailMessage.Subject = "Email Verification for FPP";
+            mailMessage.Subject = subject;
             //here we will add code into html code
             mailMessage.From = new MailAddress(Configuration.GetValue<string>("Email"));
             try
