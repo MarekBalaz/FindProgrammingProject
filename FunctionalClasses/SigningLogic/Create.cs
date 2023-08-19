@@ -50,7 +50,8 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 				WebSocketId = "",
 				ProfilePicture = null,
 				PictureFormat = "png",
-                AffiliateCode = affiliateCode
+                AffiliateCode = affiliateCode,
+                DateOfCreation = DateTime.Now
 			};
 			var fs = new FileStream("C:/Users/marek/source/repos/FindProgrammingProject - User Authentication/FindProgrammingProject/Pictures/BasicProfilePicture.png", FileMode.Open, FileAccess.Read);
             using (var stream = new MemoryStream())
@@ -84,7 +85,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
 				Currency = "EUR",
                 MaxRedemptions = 1,
 				RedeemBy = DateTime.Now.AddHours(12),
-				AppliesTo = new CouponAppliesToOptions { Products = new List<string> { configuration.GetValue<string>("prod_OQPkUBHKB3FQuA"), configuration.GetValue<string>("prod_OQPl0FjJFxzVde") } }
+				AppliesTo = new CouponAppliesToOptions { Products = new List<string> { configuration.GetValue<string>("StandardPlan"), configuration.GetValue<string>("PremiumPlan") } }
 			};
 			couponService.Create(couponOptions);
 
@@ -96,7 +97,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
                 Currency = "EUR",
                 MaxRedemptions = 1,
                 RedeemBy = DateTime.Now.AddHours(12),
-                AppliesTo = new CouponAppliesToOptions { Products = new List<string> { configuration.GetValue<string>("prod_ORBUCKdDzqoVGb"), configuration.GetValue<string>("prod_ORBV3dB5nT9818") } }
+                AppliesTo = new CouponAppliesToOptions { Products = new List<string> { configuration.GetValue<string>("StandardPlan/Y"), configuration.GetValue<string>("PremiumPlan/Y") } }
 			};
 			couponService.Create(couponOptions);
 

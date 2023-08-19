@@ -44,7 +44,7 @@ namespace FindProgrammingProject.FunctionalClasses.SigningLogic
             userManager = _userManager;
             signInManager = _signInManager;
             codeGenerator = new EmailVerificationCodeGenerator(_userManager, new MailSender(configuration));
-            creation = new Creation(_userManager, context);
+            creation = new Creation(_userManager, context, configuration);
             this.jwtTokenGenerator = jwtTokenGenerator;
         }
         public async Task<string> SignIn(string Email, string Password)
